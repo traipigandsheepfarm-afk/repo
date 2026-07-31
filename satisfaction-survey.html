@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบประเมินความพึงพอใจ - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f8fafc;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --error: #ef4444;
+        --star: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        color: var(--text-primary);
+    }
+    .container {
+        max-width: 560px;
+        margin: 0 auto;
+        background: var(--surface);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+        animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes slideUp { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2.25rem 2rem;
+        color: white;
+        text-align: center;
+    }
+    .header .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .header h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .header p { font-size: 0.9rem; opacity: 0.92; }
+    .body-content { padding: 2rem; }
+
+    .elderly-banner {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        border-radius: 12px;
+        padding: 0.9rem 1.1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        text-align: center;
+    }
+    .elderly-banner strong { font-size: 1.05rem; }
+
+    .form-group { margin-bottom: 1.4rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    label { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
+    select, input[type="date"], textarea {
+        padding: 0.85rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        background: var(--surface);
+    }
+    select:focus, input:focus, textarea:focus {
+        outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+
+    .star-rating {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0 0.25rem;
+    }
+    .star {
+        font-size: 2.75rem;
+        color: #e2e8f0;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+    .star.filled { color: var(--star); transform: scale(1.05); }
+    .star-label {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        min-height: 1.3rem;
+        font-weight: 600;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        padding: 1rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 1.05rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 12px rgba(102,126,234,0.35);
+        margin-top: 0.5rem;
+    }
+    button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102,126,234,0.5); }
+    button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .alert {
+        padding: 1rem 1.1rem;
+        border-radius: 12px;
+        margin-bottom: 1.25rem;
+        font-size: 0.92rem;
+        display: none;
+        align-items: center;
+        gap: 0.6rem;
+    }
+    .alert-error { background: #fee2e2; color: #991b1b; border: 2px solid var(--error); }
+    .alert-success { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
+
+    .success-view { text-align: center; padding: 1rem 0; display: none; }
+    .success-view .icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .success-view h2 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .success-view p { color: var(--text-secondary); font-size: 0.92rem; }
+
+    .footer-note { text-align: center; font-size: 0.78rem; color: var(--text-secondary); margin-top: 1.5rem; }
+    .loading-state { text-align: center; padding: 3rem 1rem; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="icon">💬</div>
+        <h1>แบบประเมินความพึงพอใจ</h1>
+        <p>ต่อการให้บริการดูแลผู้สูงอายุ</p>
+    </div>
+    <div class="body-content">
+
+        <div id="loadingState" class="loading-state">กำลังโหลดข้อมูล...</div>
+
+        <div id="mainForm" style="display:none;">
+            <div class="elderly-banner">
+                ท่านกำลังประเมินความพึงพอใจสำหรับ<br>
+                <strong id="elderlyNameLabel">-</strong>
+            </div>
+
+            <div id="alertBox" class="alert alert-error"></div>
+
+            <form id="surveyForm">
+                <div class="form-group">
+                    <label for="staffSelect">ผู้ให้บริการในครั้งนี้</label>
+                    <select id="staffSelect" required>
+                        <option value="">-- เลือกผู้ให้บริการ --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitDate">วันที่รับบริการ</label>
+                    <input type="date" id="visitDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label style="text-align:center;">ระดับความพึงพอใจโดยรวม</label>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <div class="star-label" id="starLabel"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">ความคิดเห็นเพิ่มเติม (ถ้ามี)</label>
+                    <textarea id="comment" placeholder="เช่น สิ่งที่ประทับใจ หรือสิ่งที่อยากให้ปรับปรุง"></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn">ส่งแบบประเมิน</button>
+            </form>
+        </div>
+
+        <div id="successView" class="success-view">
+            <div class="icon">✅</div>
+            <h2>ขอบคุณสำหรับความคิดเห็น</h2>
+            <p>แบบประเมินของท่านถูกบันทึกเรียบร้อยแล้ว<br>ข้อมูลนี้จะช่วยพัฒนาการให้บริการให้ดียิ่งขึ้น</p>
+        </div>
+
+        <div id="noIdView" style="display:none; text-align:center; padding: 1rem 0;">
+            <div style="font-size:2.5rem; margin-bottom:1rem;">🔗</div>
+            <p style="color:var(--text-secondary);">ลิงก์นี้ไม่สมบูรณ์ กรุณาใช้ลิงก์หรือสแกน QR code ที่เจ้าหน้าที่ให้ไว้หลังจบการให้บริการ</p>
+        </div>
+
+        <div class="footer-note">ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</div>
+    </div>
+</div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    const elderlyId = new URLSearchParams(window.location.search).get('id');
+    let elderlyName = '';
+
+    async function init() {
+        if (!elderlyId) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('noIdView').style.display = 'block';
+            return;
+        }
+
+        const detail = await apiGet('getElderlyDetail', { id: elderlyId });
+        document.getElementById('loadingState').style.display = 'none';
+
+        if (!detail.success) {
+            document.getElementById('noIdView').style.display = 'block';
+            return;
+        }
+
+        elderlyName = detail.data.elderly['ชื่อ-สกุล'];
+        document.getElementById('elderlyNameLabel').textContent = elderlyName;
+
+        const staffOptions = detail.data.assignments.map(a =>
+            `<option value="${esc(a.staffName)}">${esc(a.staffName)} (${esc(a.type)})</option>`
+        ).join('');
+        document.getElementById('staffSelect').innerHTML =
+            '<option value="">-- เลือกผู้ให้บริการ --</option>' + staffOptions;
+
+        document.getElementById('visitDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('mainForm').style.display = 'block';
+    }
+
+    // ===== Star rating =====
+    let selectedScore = 0;
+    const starLabels = { 1: 'น้อยที่สุด', 2: 'น้อย', 3: 'ปานกลาง', 4: 'มาก', 5: 'มากที่สุด' };
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', () => {
+            selectedScore = parseInt(star.dataset.value);
+            updateStars();
+        });
+    });
+    function updateStars() {
+        document.querySelectorAll('.star').forEach(s => {
+            s.classList.toggle('filled', parseInt(s.dataset.value) <= selectedScore);
+        });
+        document.getElementById('starLabel').textContent = selectedScore ? starLabels[selectedScore] : '';
+    }
+
+    function showError(msg) {
+        const box = document.getElementById('alertBox');
+        box.textContent = msg;
+        box.style.display = 'flex';
+    }
+    function hideError() {
+        document.getElementById('alertBox').style.display = 'none';
+    }
+
+    document.getElementById('surveyForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideError();
+
+        const staffName = document.getElementById('staffSelect').value;
+        const visitDate = document.getElementById('visitDate').value;
+        const comment = document.getElementById('comment').value.trim();
+
+        if (!staffName) { showError('กรุณาเลือกผู้ให้บริการ'); return; }
+        if (!visitDate) { showError('กรุณาเลือกวันที่รับบริการ'); return; }
+        if (!selectedScore) { showError('กรุณาให้คะแนนความพึงพอใจ'); return; }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'กำลังส่ง...';
+
+        const payload = {
+            elderlyId: elderlyId,
+            elderlyName: elderlyName,
+            visitDate: visitDate,
+            staffName: staffName,
+            score: selectedScore,
+            comment: comment
+        };
+
+        try {
+            const json = await apiGet('saveSurvey', { data: JSON.stringify(payload) });
+            if (json.success) {
+                document.getElementById('mainForm').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
+            } else {
+                showError(json.message || 'ส่งแบบประเมินไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ส่งแบบประเมิน';
+            }
+        } catch (err) {
+            showError('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'ส่งแบบประเมิน';
+        }
+    });
+
+    init();
+</script>
+
+</body>
+</html>
