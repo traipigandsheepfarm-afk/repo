@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f8fafc;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --error: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+    .card {
+        width: 100%;
+        max-width: 420px;
+        background: var(--surface);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+        animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes slideUp { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2.25rem 2rem 1.75rem;
+        color: white;
+        text-align: center;
+    }
+    .card-header .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .card-header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .card-header p { font-size: 0.9rem; opacity: 0.9; }
+    .card-body { padding: 2rem; }
+    .form-group { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    label { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
+    select, input[type="password"], input[type="tel"] {
+        padding: 0.85rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        background: var(--surface);
+        transition: all 0.2s ease;
+    }
+    select:focus, input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-light);
+    }
+    .pin-input {
+        letter-spacing: 0.5em;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    button {
+        width: 100%;
+        padding: 0.95rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 1.05rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 12px rgba(102,126,234,0.35);
+    }
+    button:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102,126,234,0.5); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .alert {
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+        display: none;
+    }
+    .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid var(--error); }
+    .loading-text { display: none; font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 0.75rem; }
+    .footer-note { text-align: center; font-size: 0.8rem; color: var(--text-secondary); margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <div class="icon">🔐</div>
+        <h1>เข้าสู่ระบบ</h1>
+        <p>ระบบบันทึกการดูแลผู้สูงอายุ</p>
+    </div>
+    <div class="card-body">
+        <div id="alertBox" class="alert alert-error"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="userSelect">ชื่อ-สกุล</label>
+                <select id="userSelect" required>
+                    <option value="">-- กำลังโหลดรายชื่อ --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pinInput">รหัส PIN</label>
+                <input type="password" id="pinInput" class="pin-input" inputmode="numeric" maxlength="6" placeholder="••••••" required>
+            </div>
+            <button type="submit" id="submitBtn">เข้าสู่ระบบ</button>
+            <div class="loading-text" id="loadingText">กำลังตรวจสอบ...</div>
+        </form>
+
+        <div class="footer-note">ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</div>
+    </div>
+</div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    const userSelect = document.getElementById('userSelect');
+    const pinInput = document.getElementById('pinInput');
+    const loginForm = document.getElementById('loginForm');
+    const alertBox = document.getElementById('alertBox');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingText = document.getElementById('loadingText');
+
+    function showError(msg) {
+        alertBox.textContent = msg;
+        alertBox.style.display = 'block';
+    }
+    function hideError() {
+        alertBox.style.display = 'none';
+    }
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${WEB_APP_URL}?action=getStaffList`);
+            const json = await res.json();
+            if (json.success && json.data.length > 0) {
+                userSelect.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>' +
+                    json.data.map(u => `<option value="${escapeHtml(u.name)}">${escapeHtml(u.name)} (${escapeHtml(u.role)})</option>`).join('');
+            } else {
+                userSelect.innerHTML = '<option value="">ไม่พบรายชื่อผู้ใช้งาน</option>';
+            }
+        } catch (e) {
+            userSelect.innerHTML = '<option value="">โหลดรายชื่อไม่สำเร็จ</option>';
+            showError('ไม่สามารถโหลดรายชื่อผู้ใช้งานได้ กรุณาตรวจสอบการเชื่อมต่อ');
+        }
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    loginForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideError();
+        const name = userSelect.value;
+        const pin = pinInput.value.trim();
+        if (!name || !pin) {
+            showError('กรุณาเลือกชื่อและกรอกรหัส PIN');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        loadingText.style.display = 'block';
+
+        try {
+            const url = `${WEB_APP_URL}?action=login&name=${encodeURIComponent(name)}&pin=${encodeURIComponent(pin)}`;
+            const res = await fetch(url);
+            const json = await res.json();
+
+            if (json.success) {
+                sessionStorage.setItem('userName', json.name);
+                sessionStorage.setItem('userRole', json.role);
+
+                if (json.role === 'CM') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'staff-dashboard.html';
+                }
+            } else {
+                showError(json.message || 'เข้าสู่ระบบไม่สำเร็จ');
+                submitBtn.disabled = false;
+                loadingText.style.display = 'none';
+            }
+        } catch (err) {
+            showError('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+            submitBtn.disabled = false;
+            loadingText.style.display = 'none';
+        }
+    });
+
+    loadUsers();
+</script>
+
+</body>
+</html>
