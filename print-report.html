@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานการปฏิบัติงาน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --background: #f8fafc;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: #eef1f5;
+        color: var(--text-primary);
+        padding: 2rem 1rem;
+    }
+
+    .toolbar {
+        max-width: 850px;
+        margin: 0 auto 1rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+
+    .toolbar button {
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-print {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+    }
+
+    .btn-print:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-close {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--border);
+    }
+
+    .btn-close:hover {
+        background: var(--background);
+    }
+
+    .sheet {
+        max-width: 850px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
+        overflow: hidden;
+    }
+
+    .report-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 2.5rem;
+        text-align: center;
+    }
+
+    .report-header .kicker {
+        font-size: 0.85rem;
+        opacity: 0.85;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.35rem;
+    }
+
+    .report-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .report-header p {
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+
+    .report-body {
+        padding: 2rem 2.5rem 2.5rem;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.9rem 2rem;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .meta-item .label {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+    }
+
+    .meta-item .value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .section {
+        margin-bottom: 1.75rem;
+    }
+
+    .section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 0.85rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-light);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title::before {
+        content: '';
+        width: 4px;
+        height: 18px;
+        background: linear-gradient(to bottom, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+
+    .vital-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .vital-card {
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.9rem 1rem;
+        text-align: center;
+    }
+
+    .vital-card .v-label {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .vital-card .v-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+    }
+
+    .activity-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .activity-tag {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .assessment-box {
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        min-height: 3rem;
+    }
+
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+    }
+
+    .photo-grid img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+    }
+
+    .empty-note {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-style: italic;
+    }
+
+    .signature-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed var(--border);
+    }
+
+    .signature-box {
+        text-align: center;
+    }
+
+    .signature-line {
+        border-bottom: 1px solid var(--text-secondary);
+        margin: 2.5rem 1.5rem 0.6rem;
+    }
+
+    .signature-box .sig-role {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .report-footer {
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-top: 1.75rem;
+    }
+
+    /* Print styles */
+    @media print {
+        body {
+            background: white;
+            padding: 0;
+        }
+        .toolbar {
+            display: none;
+        }
+        .sheet {
+            box-shadow: none;
+            border-radius: 0;
+            max-width: 100%;
+        }
+        .report-header {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .meta-grid, .vital-row, .signature-row {
+            grid-template-columns: 1fr;
+        }
+        .photo-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .report-body {
+            padding: 1.5rem 1.25rem;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn-close" onclick="window.close()">← ปิดหน้านี้</button>
+    <button class="btn-print" onclick="window.print()">🖨️ พิมพ์ / บันทึกเป็น PDF</button>
+</div>
+
+<div class="sheet">
+    <div class="report-header">
+        <div class="kicker">รายงานการปฏิบัติงาน</div>
+        <h1>📋 แบบบันทึกการปฏิบัติงานประจำวัน</h1>
+        <p>ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</p>
+    </div>
+
+    <div class="report-body" id="reportBody">
+        <!-- Content is injected by JavaScript -->
+    </div>
+</div>
+
+<script>
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function formatThaiDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+            const buddhistYear = d.getFullYear() + 543;
+            return `${d.getDate()} ${months[d.getMonth()]} ${buddhistYear}`;
+        } catch (e) {
+            return dateStr;
+        }
+    }
+
+    function render() {
+        const raw = localStorage.getItem('reportData');
+        const body = document.getElementById('reportBody');
+
+        if (!raw) {
+            body.innerHTML = `
+                <div style="text-align:center; padding: 3rem 1rem;">
+                    <div style="font-size:2.5rem; margin-bottom: 1rem;">📭</div>
+                    <p style="color: var(--text-secondary); font-size: 1rem;">
+                        ไม่พบข้อมูลรายงาน กรุณากลับไปกรอกแบบฟอร์มและกด
+                        "ดูตัวอย่างรายงาน" อีกครั้ง
+                    </p>
+                </div>`;
+            return;
+        }
+
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (e) {
+            body.innerHTML = `<p class="empty-note">ไม่สามารถอ่านข้อมูลรายงานได้</p>`;
+            return;
+        }
+
+        const activities = (data.activities || '')
+            .split(',')
+            .map(a => a.trim())
+            .filter(Boolean);
+
+        const activityTags = activities.length
+            ? activities.map(a => `<span class="activity-tag">${esc(a)}</span>`).join('')
+            : `<span class="empty-note">ไม่ได้เลือกกิจกรรม</span>`;
+
+        const photos = (data.images || []);
+        const photoHtml = photos.length
+            ? `<div class="photo-grid">${photos.map(src => `<img src="${src}" alt="ภาพกิจกรรม">`).join('')}</div>`
+            : `<p class="empty-note">ไม่มีรูปภาพแนบ</p>`;
+
+        body.innerHTML = `
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <span class="label">ประจำเดือน</span>
+                    <span class="value">${esc(data.monthYear) || '-'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">วันที่เยี่ยม</span>
+                    <span class="value">${formatThaiDate(data.visitDate)}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">ชื่อ-สกุล (สหวิชาชีพ)</span>
+                    <span class="value">${esc(data.caregiverName) || '-'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">ชื่อ-สกุล ผู้สูงอายุ</span>
+                    <span class="value">${esc(data.elderlyName) || '-'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">เวลาเริ่ม</span>
+                    <span class="value">${esc(data.startTime) || '-'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">เวลาสิ้นสุด</span>
+                    <span class="value">${esc(data.endTime) || '-'}</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">สัญญาณชีพ</div>
+                <div class="vital-row">
+                    <div class="vital-card">
+                        <div class="v-label">ความดันโลหิต (mmHg)</div>
+                        <div class="v-value">${esc(data.bloodPressure) || '-'}</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="v-label">ชีพจร (ครั้ง/นาที)</div>
+                        <div class="v-value">${esc(data.pulse) || '-'}</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="v-label">น้ำตาลในเลือด (mg/dl)</div>
+                        <div class="v-value">${esc(data.bloodSugar) || '-'}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">กิจกรรมที่ปฏิบัติ</div>
+                <div class="activity-tags">${activityTags}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">ผลการประเมินและหมายเหตุ</div>
+                <div class="assessment-box">${data.assessment ? esc(data.assessment) : '<span class="empty-note">ไม่มีบันทึกเพิ่มเติม</span>'}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">ภาพถ่ายกิจกรรม</div>
+                ${photoHtml}
+            </div>
+
+            <div class="signature-row">
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="sig-role">ผู้บันทึก (สหวิชาชีพ)</div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="sig-role">ผู้ตรวจสอบ</div>
+                </div>
+            </div>
+
+            <div class="report-footer">
+                พิมพ์รายงานเมื่อ ${new Date().toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' })}
+            </div>
+        `;
+    }
+
+    render();
+</script>
+
+</body>
+</html>
