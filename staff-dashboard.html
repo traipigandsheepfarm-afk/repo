@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายชื่อผู้สูงอายุของฉัน - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f4f6fb;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --warn: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: var(--background);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .topbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.25rem 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .topbar h1 { font-size: 1.2rem; font-weight: 700; }
+    .topbar .sub { font-size: 0.8rem; opacity: 0.9; }
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(255,255,255,0.15);
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+    }
+    .user-chip .role-tag {
+        background: white;
+        color: var(--primary-dark);
+        padding: 0.15rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+    .user-chip button {
+        background: white;
+        color: var(--primary-dark);
+        border: none;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 1.75rem; }
+
+    .summary-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .summary-bar h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+    .summary-count {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .elderly-card {
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    .card-top {
+        padding: 1.25rem 1.25rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .card-top .name { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .card-top .address { font-size: 0.82rem; color: var(--text-secondary); }
+
+    .badge-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.65rem; }
+    .badge { padding: 0.22rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; }
+    .badge-adl { background: var(--primary-light); color: var(--primary-dark); }
+    .badge-freq { background: #f1f5f9; color: var(--text-secondary); }
+    .badge-watch { background: #fef3c7; color: #92400e; }
+
+    .card-body { padding: 1rem 1.25rem; flex: 1; }
+    .info-row { font-size: 0.82rem; margin-bottom: 0.5rem; }
+    .info-row .label { color: var(--text-secondary); }
+
+    .family-list { margin-top: 0.5rem; }
+    .family-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        padding: 0.3rem 0;
+        border-top: 1px dashed var(--border);
+    }
+    .family-item:first-child { border-top: none; }
+    .family-item a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+        background: var(--background);
+    }
+    .card-actions a {
+        flex: 1;
+        text-align: center;
+        padding: 0.65rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-log { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+    .btn-log:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .btn-report { background: var(--surface); color: var(--text-primary); border: 2px solid var(--border); }
+    .btn-report:hover { background: white; border-color: var(--primary); }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px dashed var(--border);
+    }
+    .empty-state .icon { font-size: 2.75rem; margin-bottom: 1rem; }
+    .empty-state p { color: var(--text-secondary); font-size: 0.95rem; }
+
+    .loading-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div>
+        <h1>👋 รายชื่อผู้สูงอายุของฉัน</h1>
+        <div class="sub">ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</div>
+    </div>
+    <div class="user-chip">
+        <span id="userLabel">กำลังตรวจสอบสิทธิ์...</span>
+        <button onclick="logout()">ออกจากระบบ</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="summary-bar">
+        <h2>เคสที่รับผิดชอบ</h2>
+        <span class="summary-count" id="countLabel">— ราย</span>
+    </div>
+    <div id="content">
+        <div class="loading-state">กำลังโหลดข้อมูล...</div>
+    </div>
+</div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    const userName = sessionStorage.getItem('userName');
+    const userRole = sessionStorage.getItem('userRole');
+
+    if (!userName) {
+        window.location.href = 'login.html';
+    } else if (userRole === 'CM') {
+        window.location.href = 'admin.html';
+    } else {
+        document.getElementById('userLabel').innerHTML =
+            `${esc(userName)} <span class="role-tag">${esc(userRole)}</span>`;
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    function adlBadge(adl) {
+        return `<span class="badge badge-adl">${esc(adl || '-')}</span>`;
+    }
+
+    async function loadDashboard() {
+        const elderlyRes = await apiGet('getElderlyForStaff', { name: userName });
+        const content = document.getElementById('content');
+        const countLabel = document.getElementById('countLabel');
+
+        if (!elderlyRes.success || elderlyRes.data.length === 0) {
+            countLabel.textContent = '0 ราย';
+            content.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">📭</div>
+                    <p>ยังไม่มีผู้สูงอายุที่ได้รับมอบหมายให้คุณดูแล<br>กรุณาติดต่อ CM (ผู้ดูแลระบบ) เพื่อขอมอบหมายเคส</p>
+                </div>`;
+            return;
+        }
+
+        countLabel.textContent = elderlyRes.data.length + ' ราย';
+
+        // โหลดรายชื่อครอบครัวทั้งหมดมาครั้งเดียว แล้วกรองต่อคน (ลดจำนวนการเรียก API)
+        const familyRes = await apiGet('getAllFamily');
+        const allFamily = familyRes.success ? familyRes.data : [];
+
+        const cardsHtml = elderlyRes.data.map(row => {
+            const id = row['รหัส'];
+            const name = row['ชื่อ-สกุล'];
+            const family = allFamily.filter(f => String(f.elderlyId) === String(id));
+
+            const familyHtml = family.length
+                ? family.map(f => `
+                    <div class="family-item">
+                        <span>${esc(f.name)} (${esc(f.relation)})</span>
+                        <a href="tel:${esc(f.phone)}">${esc(f.phone)}</a>
+                    </div>`).join('')
+                : `<div class="family-item" style="color:var(--text-secondary);">ยังไม่มีข้อมูลผู้ดูแลในครอบครัว</div>`;
+
+            const precautionHtml = row['ข้อควรระวังพิเศษ']
+                ? `<div class="info-row"><span class="label">⚠️ ข้อควรระวัง:</span> ${esc(row['ข้อควรระวังพิเศษ'])}</div>`
+                : '';
+            const conditionHtml = row['โรคประจำตัว']
+                ? `<div class="info-row"><span class="label">โรคประจำตัว:</span> ${esc(row['โรคประจำตัว'])}</div>`
+                : '';
+
+            return `
+            <div class="elderly-card">
+                <div class="card-top">
+                    <div class="name">${esc(name)}</div>
+                    <div class="address">${esc(row['ที่อยู่'] || '')}</div>
+                    <div class="badge-row">
+                        ${adlBadge(row['ระดับ ADL'])}
+                        <span class="badge badge-freq">${esc(row['ความถี่การเยี่ยม'] || '-')}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    ${conditionHtml}
+                    ${precautionHtml}
+                    <div class="info-row" style="margin-top:0.75rem;"><span class="label">👪 ผู้ติดต่อในครอบครัว</span></div>
+                    <div class="family-list">${familyHtml}</div>
+                </div>
+                <div class="card-actions">
+                    <a class="btn-log" href="elderly-care-log.html?elderlyId=${encodeURIComponent(id)}">📝 บันทึกการเยี่ยม</a>
+                    <a class="btn-report" href="elderly-report.html?id=${encodeURIComponent(id)}">📄 ดูรายงาน</a>
+                </div>
+            </div>`;
+        }).join('');
+
+        content.innerHTML = `<div class="card-grid">${cardsHtml}</div>`;
+    }
+
+    if (userName && userRole !== 'CM') {
+        loadDashboard();
+    }
+</script>
+
+</body>
+</html>
