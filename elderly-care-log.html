@@ -23,11 +23,7 @@
             --success: #10b981;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
@@ -35,6 +31,46 @@
             min-height: 100vh;
             padding: 2rem 1rem;
             color: var(--text-primary);
+        }
+
+        .topbar {
+            max-width: 900px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .topbar a.back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.18);
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+        }
+        .topbar .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255,255,255,0.18);
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+        }
+        .topbar .user-chip button {
+            background: white;
+            color: var(--primary-dark);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
         }
 
         .container {
@@ -48,14 +84,8 @@
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
@@ -65,7 +95,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .header::before {
             content: '';
             position: absolute;
@@ -77,52 +106,19 @@
             border-radius: 50%;
             animation: float 6s ease-in-out infinite;
         }
-
         @keyframes float {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
             50% { transform: translate(-20px, 20px) rotate(180deg); }
         }
+        .header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; position: relative; z-index: 1; }
+        .header p { font-size: 1rem; opacity: 0.95; position: relative; z-index: 1; }
 
-        .header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header p {
-            font-size: 1rem;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-        }
-
-        .form-content {
-            padding: 2.5rem 2rem;
-        }
-
-        .form-section {
-            margin-bottom: 2rem;
-            animation: fadeIn 0.5s ease-out backwards;
-        }
-
+        .form-content { padding: 2.5rem 2rem; }
+        .form-section { margin-bottom: 2rem; animation: fadeIn 0.5s ease-out backwards; }
         .form-section:nth-child(1) { animation-delay: 0.1s; }
         .form-section:nth-child(2) { animation-delay: 0.2s; }
         .form-section:nth-child(3) { animation-delay: 0.3s; }
-        .form-section:nth-child(4) { animation-delay: 0.4s; }
-        .form-section:nth-child(5) { animation-delay: 0.5s; }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .section-title {
             font-size: 1.25rem;
@@ -135,7 +131,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .section-title::before {
             content: '';
             width: 4px;
@@ -150,25 +145,11 @@
             gap: 1.25rem;
             margin-bottom: 1.25rem;
         }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        label { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        label {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        input[type="number"],
-        textarea,
-        select {
+        input[type="text"], input[type="date"], input[type="time"], input[type="number"],
+        textarea, select {
             padding: 0.875rem 1rem;
             border: 2px solid var(--border);
             border-radius: 12px;
@@ -177,22 +158,13 @@
             transition: all 0.3s ease;
             background: var(--surface);
         }
-
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        input[type="time"]:focus,
-        input[type="number"]:focus,
-        textarea:focus,
-        select:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px var(--primary-light);
         }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
+        input[readonly] { background: var(--background); color: var(--text-secondary); }
+        textarea { min-height: 120px; resize: vertical; }
 
         .checkbox-grid {
             display: grid;
@@ -200,7 +172,6 @@
             gap: 0.75rem;
             margin-top: 0.75rem;
         }
-
         .checkbox-item {
             display: flex;
             align-items: center;
@@ -211,24 +182,9 @@
             transition: all 0.2s ease;
             cursor: pointer;
         }
-
-        .checkbox-item:hover {
-            background: var(--primary-light);
-            transform: translateX(4px);
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        .checkbox-item label {
-            cursor: pointer;
-            font-weight: 400;
-            margin: 0;
-        }
+        .checkbox-item:hover { background: var(--primary-light); transform: translateX(4px); }
+        .checkbox-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
+        .checkbox-item label { cursor: pointer; font-weight: 400; margin: 0; }
 
         .vital-signs {
             display: grid;
@@ -239,21 +195,23 @@
             border-radius: 12px;
             margin-bottom: 1.25rem;
         }
+        .vital-input { display: flex; flex-direction: column; gap: 0.5rem; }
+        .vital-input label { font-size: 0.875rem; color: var(--text-secondary); }
+        .vital-input input { padding: 0.75rem; }
 
-        .vital-input {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .elderly-info-box {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-top: 0.75rem;
+            font-size: 0.88rem;
+            display: none;
         }
-
-        .vital-input label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .vital-input input {
-            padding: 0.75rem;
-        }
+        .elderly-info-box.visible { display: block; }
+        .elderly-info-box .row { margin-bottom: 0.4rem; }
+        .elderly-info-box .row:last-child { margin-bottom: 0; }
+        .elderly-info-box .label { font-weight: 600; color: var(--primary-dark); }
+        .elderly-info-box .family-phone { color: var(--primary-dark); font-weight: 600; }
 
         .image-upload-section {
             background: var(--background);
@@ -262,51 +220,19 @@
             border: 2px dashed var(--border);
             transition: all 0.3s ease;
         }
-
-        .image-upload-section:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .upload-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            padding: 1rem;
-        }
-
+        .image-upload-section:hover { border-color: var(--primary); background: var(--primary-light); }
+        .upload-label { display: flex; flex-direction: column; align-items: center; gap: 1rem; cursor: pointer; padding: 1rem; }
         .upload-icon {
-            width: 64px;
-            height: 64px;
+            width: 64px; height: 64px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 2rem;
         }
-
-        .upload-text {
-            text-align: center;
-        }
-
-        .upload-text h3 {
-            font-size: 1.125rem;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .upload-text p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        #imageInput {
-            display: none;
-        }
+        .upload-text { text-align: center; }
+        .upload-text h3 { font-size: 1.125rem; color: var(--text-primary); margin-bottom: 0.25rem; }
+        .upload-text p { font-size: 0.875rem; color: var(--text-secondary); }
+        #imageInput { display: none; }
 
         .image-preview {
             display: grid;
@@ -314,198 +240,73 @@
             gap: 1rem;
             margin-top: 1.5rem;
         }
-
         .preview-item {
-            position: relative;
-            aspect-ratio: 1;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px var(--shadow);
-            animation: scaleIn 0.3s ease-out;
+            position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow); animation: scaleIn 0.3s ease-out;
         }
-
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
         .remove-image {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 32px;
-            height: 32px;
-            background: rgba(239, 68, 68, 0.95);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: absolute; top: 8px; right: 8px; width: 32px; height: 32px;
+            background: rgba(239, 68, 68, 0.95); border: none; border-radius: 50%;
+            color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
+        .remove-image:hover { background: #dc2626; transform: scale(1.1); }
 
-        .remove-image:hover {
-            background: #dc2626;
-            transform: scale(1.1);
+        .button-group { display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border); }
+        button[type="submit"], .reset-btn {
+            flex: 1; padding: 1rem 2rem; font-size: 1.125rem; font-weight: 600;
+            border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-family: inherit;
         }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 2px solid var(--border);
-        }
-
-        button[type="submit"],
-        .reset-btn {
-            flex: 1;
-            padding: 1rem 2rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
         button[type="submit"] {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2); color: white;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-
-        button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        button[type="submit"]:active {
-            transform: translateY(0);
-        }
-
-        button[type="submit"]:disabled {
-            background: var(--text-secondary);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .reset-btn {
-            background: var(--surface);
-            color: var(--text-primary);
-            border: 2px solid var(--border);
-        }
-
-        .reset-btn:hover {
-            background: var(--background);
-            border-color: var(--text-secondary);
-        }
+        button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6); }
+        button[type="submit"]:active { transform: translateY(0); }
+        button[type="submit"]:disabled { background: var(--text-secondary); cursor: not-allowed; transform: none; }
+        .reset-btn { background: var(--surface); color: var(--text-primary); border: 2px solid var(--border); }
+        .reset-btn:hover { background: var(--background); border-color: var(--text-secondary); }
 
         .alert {
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: slideDown 0.3s ease-out;
+            padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.75rem; animation: slideDown 0.3s ease-out;
         }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 2px solid #10b981;
-        }
-
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 2px solid #ef4444;
-        }
-
-        .alert-icon {
-            font-size: 1.5rem;
-        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .alert-success { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
+        .alert-icon { font-size: 1.5rem; }
 
         .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 0.5rem;
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 0.5rem;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-            body {
-                padding: 1rem 0.5rem;
-            }
-
-            .header {
-                padding: 2rem 1.5rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .form-content {
-                padding: 2rem 1.5rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .checkbox-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .vital-signs {
-                grid-template-columns: 1fr;
-            }
+            body { padding: 1rem 0.5rem; }
+            .header { padding: 2rem 1.5rem; }
+            .header h1 { font-size: 1.5rem; }
+            .form-content { padding: 2rem 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr; }
+            .button-group { flex-direction: column; }
+            .vital-signs { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+
+    <div class="topbar">
+        <a class="back-link" href="staff-dashboard.html">← กลับหน้ารายชื่อผู้สูงอายุ</a>
+        <div class="user-chip">
+            <span id="userLabel">-</span>
+            <button onclick="logout()">ออกจากระบบ</button>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>📋 แบบบันทึกการปฏิบัติงานประจำวัน</h1>
@@ -525,14 +326,17 @@
                             <input type="text" id="monthYear" name="monthYear" placeholder="ธันวาคม 2568" required>
                         </div>
                         <div class="form-group">
-                            <label for="caregiverName">ชื่อ-สกุล (สหวิชาชีพ)</label>
-                            <input type="text" id="caregiverName" name="caregiverName" placeholder="นายไตรภพ ภาวะพจน์" required>
+                            <label for="caregiverName">ชื่อ-สกุล (สหวิชาชีพ/CG)</label>
+                            <input type="text" id="caregiverName" name="caregiverName" readonly required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="elderlyName">ชื่อ-สกุล ผู้สูงอายุ</label>
-                            <input type="text" id="elderlyName" name="elderlyName" placeholder="นายโพน แก้ววัน" required>
+                            <label for="elderlySelect">ชื่อ-สกุล ผู้สูงอายุ</label>
+                            <select id="elderlySelect" required>
+                                <option value="">-- กำลังโหลดรายชื่อ --</option>
+                            </select>
+                            <div class="elderly-info-box" id="elderlyInfoBox"></div>
                         </div>
                         <div class="form-group">
                             <label for="visitDate">วันที่</label>
@@ -554,7 +358,6 @@
                 <!-- 1. การบริการสาธารณสุขเบื้องต้น -->
                 <div class="form-section">
                     <h2 class="section-title">1. การบริการสาธารณสุขเบื้องต้น</h2>
-                    
                     <div class="vital-signs">
                         <div class="vital-input">
                             <label>ความดันโลหิต (mmHg)</label>
@@ -571,86 +374,26 @@
                     </div>
 
                     <div class="checkbox-grid">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="vitalSigns" name="activities" value="วัดสัญญาณชีพ">
-                            <label for="vitalSigns">วัดสัญญาณชีพ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="rehabilitation" name="activities" value="การฟื้นฟูสภาพ">
-                            <label for="rehabilitation">การฟื้นฟูสภาพ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="physiotherapy" name="activities" value="การทำกายภาพบำบัด">
-                            <label for="physiotherapy">การทำกายภาพบำบัด</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="medication" name="activities" value="ดูแลด้านยา">
-                            <label for="medication">ดูแลด้านยา</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="nutrition" name="activities" value="ดูแลด้านโภชนาการ">
-                            <label for="nutrition">ดูแลด้านโภชนาการ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="massage" name="activities" value="นวดกระตุ้นระบบไหลเวียน">
-                            <label for="massage">นวดกระตุ้นระบบไหลเวียน</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="brainExercise" name="activities" value="ฝึกบริหารสมอง">
-                            <label for="brainExercise">ฝึกบริหารสมอง</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="exercise" name="activities" value="บริหารข้อและกล้ามเนื้อ">
-                            <label for="exercise">บริหารข้อและกล้ามเนื้อ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="positioning" name="activities" value="พลิกตะแคงตัว">
-                            <label for="positioning">พลิกตะแคงตัว</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="bedPosition" name="activities" value="จัดท่านอนที่เหมาะสม">
-                            <label for="bedPosition">จัดท่านอนที่เหมาะสม</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="woundCare" name="activities" value="ดูแลทำแผล">
-                            <label for="woundCare">ดูแลทำแผล</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="catheter" name="activities" value="ดูแลสายสวนปัสสาวะ">
-                            <label for="catheter">ดูแลสายสวนปัสสาวะ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="oxygen" name="activities" value="การให้ออกซิเจน">
-                            <label for="oxygen">การให้ออกซิเจน</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="firstAid" name="activities" value="ปฐมพยาบาล">
-                            <label for="firstAid">ปฐมพยาบาล</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="suction" name="activities" value="ดูแลการดูดเสมหะ">
-                            <label for="suction">ดูแลการดูดเสมหะ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="cpr" name="activities" value="การช่วยฟื้นคืนชีพ">
-                            <label for="cpr">การช่วยฟื้นคืนชีพ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="oralCare" name="activities" value="ดูแลสุขภาพช่องปาก">
-                            <label for="oralCare">ดูแลสุขภาพช่องปาก</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="assess2Q" name="activities" value="ประเมิน 2Q">
-                            <label for="assess2Q">ประเมิน 2Q</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="assess9Q" name="activities" value="ประเมิน 9Q">
-                            <label for="assess9Q">ประเมิน 9Q</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="assess8Q" name="activities" value="ประเมิน 8Q">
-                            <label for="assess8Q">ประเมิน 8Q</label>
-                        </div>
+                        <div class="checkbox-item"><input type="checkbox" id="vitalSigns" name="activities" value="วัดสัญญาณชีพ"><label for="vitalSigns">วัดสัญญาณชีพ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="rehabilitation" name="activities" value="การฟื้นฟูสภาพ"><label for="rehabilitation">การฟื้นฟูสภาพ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="physiotherapy" name="activities" value="การทำกายภาพบำบัด"><label for="physiotherapy">การทำกายภาพบำบัด</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="medication" name="activities" value="ดูแลด้านยา"><label for="medication">ดูแลด้านยา</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="nutrition" name="activities" value="ดูแลด้านโภชนาการ"><label for="nutrition">ดูแลด้านโภชนาการ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="massage" name="activities" value="นวดกระตุ้นระบบไหลเวียน"><label for="massage">นวดกระตุ้นระบบไหลเวียน</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="brainExercise" name="activities" value="ฝึกบริหารสมอง"><label for="brainExercise">ฝึกบริหารสมอง</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="exercise" name="activities" value="บริหารข้อและกล้ามเนื้อ"><label for="exercise">บริหารข้อและกล้ามเนื้อ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="positioning" name="activities" value="พลิกตะแคงตัว"><label for="positioning">พลิกตะแคงตัว</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="bedPosition" name="activities" value="จัดท่านอนที่เหมาะสม"><label for="bedPosition">จัดท่านอนที่เหมาะสม</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="woundCare" name="activities" value="ดูแลทำแผล"><label for="woundCare">ดูแลทำแผล</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="catheter" name="activities" value="ดูแลสายสวนปัสสาวะ"><label for="catheter">ดูแลสายสวนปัสสาวะ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="oxygen" name="activities" value="การให้ออกซิเจน"><label for="oxygen">การให้ออกซิเจน</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="firstAid" name="activities" value="ปฐมพยาบาล"><label for="firstAid">ปฐมพยาบาล</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="suction" name="activities" value="ดูแลการดูดเสมหะ"><label for="suction">ดูแลการดูดเสมหะ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="cpr" name="activities" value="การช่วยฟื้นคืนชีพ"><label for="cpr">การช่วยฟื้นคืนชีพ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="oralCare" name="activities" value="ดูแลสุขภาพช่องปาก"><label for="oralCare">ดูแลสุขภาพช่องปาก</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="assess2Q" name="activities" value="ประเมิน 2Q"><label for="assess2Q">ประเมิน 2Q</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="assess9Q" name="activities" value="ประเมิน 9Q"><label for="assess9Q">ประเมิน 9Q</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="assess8Q" name="activities" value="ประเมิน 8Q"><label for="assess8Q">ประเมิน 8Q</label></div>
                     </div>
                 </div>
 
@@ -658,18 +401,9 @@
                 <div class="form-section">
                     <h2 class="section-title">2. การดูแลสุขภาพขั้นพื้นฐาน</h2>
                     <div class="checkbox-grid">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="hygiene" name="activities" value="ดูแลความสะอาดด้านร่างกาย">
-                            <label for="hygiene">ดูแลความสะอาดด้านร่างกาย</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="medicationCare" name="activities" value="ดูแลด้านการกินยา">
-                            <label for="medicationCare">ดูแลด้านการกินยา</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="foodCare" name="activities" value="ดูแลเรื่องการกินอาหาร">
-                            <label for="foodCare">ดูแลเรื่องการกินอาหาร</label>
-                        </div>
+                        <div class="checkbox-item"><input type="checkbox" id="hygiene" name="activities" value="ดูแลความสะอาดด้านร่างกาย"><label for="hygiene">ดูแลความสะอาดด้านร่างกาย</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="medicationCare" name="activities" value="ดูแลด้านการกินยา"><label for="medicationCare">ดูแลด้านการกินยา</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="foodCare" name="activities" value="ดูแลเรื่องการกินอาหาร"><label for="foodCare">ดูแลเรื่องการกินอาหาร</label></div>
                     </div>
                 </div>
 
@@ -677,18 +411,9 @@
                 <div class="form-section">
                     <h2 class="section-title">3. การจัดการสภาพแวดล้อม/บ้าน/ที่อยู่อาศัย</h2>
                     <div class="checkbox-grid">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="organize" name="activities" value="จัดบ้าน/ที่อยู่อาศัยให้เป็นระเบียบ">
-                            <label for="organize">จัดบ้าน/ที่อยู่อาศัยให้เป็นระเบียบ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="cleaning" name="activities" value="ทำความสะอาดบ้าน/ที่อยู่อาศัย">
-                            <label for="cleaning">ทำความสะอาดบ้าน/ที่อยู่อาศัย</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="environment" name="activities" value="จัดสภาพแวดล้อมบ้าน/ที่อยู่อาศัย">
-                            <label for="environment">จัดสภาพแวดล้อมบ้าน/ที่อยู่อาศัย</label>
-                        </div>
+                        <div class="checkbox-item"><input type="checkbox" id="organize" name="activities" value="จัดบ้าน/ที่อยู่อาศัยให้เป็นระเบียบ"><label for="organize">จัดบ้าน/ที่อยู่อาศัยให้เป็นระเบียบ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="cleaning" name="activities" value="ทำความสะอาดบ้าน/ที่อยู่อาศัย"><label for="cleaning">ทำความสะอาดบ้าน/ที่อยู่อาศัย</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="environment" name="activities" value="จัดสภาพแวดล้อมบ้าน/ที่อยู่อาศัย"><label for="environment">จัดสภาพแวดล้อมบ้าน/ที่อยู่อาศัย</label></div>
                     </div>
                 </div>
 
@@ -696,74 +421,23 @@
                 <div class="form-section">
                     <h2 class="section-title">4. การดูแลด้านอื่นๆ</h2>
                     <div class="checkbox-grid">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="adl" name="activities" value="ประเมิน ADL">
-                            <label for="adl">ประเมิน ADL</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="dementia" name="activities" value="ประเมินภาวะสมองเสื่อม">
-                            <label for="dementia">ประเมินภาวะสมองเสื่อม</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="abdominalMassage" name="activities" value="นวดท้อง">
-                            <label for="abdominalMassage">นวดท้อง</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="foodAdvice" name="activities" value="ให้คำแนะนำเรื่องอาหารที่เหมาะสม">
-                            <label for="foodAdvice">ให้คำแนะนำเรื่องอาหารที่เหมาะสม</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="lotion" name="activities" value="ทาโลชั่นน้ำมันมะกอก">
-                            <label for="lotion">ทาโลชั่นน้ำมันมะกอก</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="progressAssess" name="activities" value="ประเมินความก้าวหน้า">
-                            <label for="progressAssess">ประเมินความก้าวหน้า</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="nutritionAssess" name="activities" value="ประเมินภาวะโภชนาการ">
-                            <label for="nutritionAssess">ประเมินภาวะโภชนาการ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="medicationAssess" name="activities" value="ประเมินความถูกต้องการใช้ยา">
-                            <label for="medicationAssess">ประเมินความถูกต้องการใช้ยา</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="bowelAdvice" name="activities" value="แนะนำอาหารกระตุ้นการขับถ่าย">
-                            <label for="bowelAdvice">แนะนำอาหารกระตุ้นการขับถ่าย</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="stressAssess" name="activities" value="ประเมินภาวะเครียด ST5">
-                            <label for="stressAssess">ประเมินภาวะเครียด ST5</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tai" name="activities" value="ประเมิน TAI I1-i3 C2-C4 B3-B5">
-                            <label for="tai">ประเมิน TAI I1-i3 C2-C4 B3-B5</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="bladderTraining" name="activities" value="ฝึกการกลั้นปัสสาวะ">
-                            <label for="bladderTraining">ฝึกการกลั้นปัสสาวะ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="amt" name="activities" value="ประเมินภาวะสมองเสื่อม AMT">
-                            <label for="amt">ประเมินภาวะสมองเสื่อม AMT</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="pressureUlcer" name="activities" value="ประเมินแผลกดทับ">
-                            <label for="pressureUlcer">ประเมินแผลกดทับ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="footPosition" name="activities" value="การจัดท่านอนป้องกันปลายเท้าตก">
-                            <label for="footPosition">การจัดท่านอนป้องกันปลายเท้าตก</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="transfer" name="activities" value="การเคลื่อนย้ายบนเตียงลงจากเตียง">
-                            <label for="transfer">การเคลื่อนย้ายบนเตียงลงจากเตียง</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="templeVisit" name="activities" value="กระตุ้นไปวัด">
-                            <label for="templeVisit">กระตุ้นไปวัด</label>
-                        </div>
+                        <div class="checkbox-item"><input type="checkbox" id="adl" name="activities" value="ประเมิน ADL"><label for="adl">ประเมิน ADL</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="dementia" name="activities" value="ประเมินภาวะสมองเสื่อม"><label for="dementia">ประเมินภาวะสมองเสื่อม</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="abdominalMassage" name="activities" value="นวดท้อง"><label for="abdominalMassage">นวดท้อง</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="foodAdvice" name="activities" value="ให้คำแนะนำเรื่องอาหารที่เหมาะสม"><label for="foodAdvice">ให้คำแนะนำเรื่องอาหารที่เหมาะสม</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="lotion" name="activities" value="ทาโลชั่นน้ำมันมะกอก"><label for="lotion">ทาโลชั่นน้ำมันมะกอก</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="progressAssess" name="activities" value="ประเมินความก้าวหน้า"><label for="progressAssess">ประเมินความก้าวหน้า</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="nutritionAssess" name="activities" value="ประเมินภาวะโภชนาการ"><label for="nutritionAssess">ประเมินภาวะโภชนาการ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="medicationAssess" name="activities" value="ประเมินความถูกต้องการใช้ยา"><label for="medicationAssess">ประเมินความถูกต้องการใช้ยา</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="bowelAdvice" name="activities" value="แนะนำอาหารกระตุ้นการขับถ่าย"><label for="bowelAdvice">แนะนำอาหารกระตุ้นการขับถ่าย</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="stressAssess" name="activities" value="ประเมินภาวะเครียด ST5"><label for="stressAssess">ประเมินภาวะเครียด ST5</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="tai" name="activities" value="ประเมิน TAI I1-i3 C2-C4 B3-B5"><label for="tai">ประเมิน TAI I1-i3 C2-C4 B3-B5</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="bladderTraining" name="activities" value="ฝึกการกลั้นปัสสาวะ"><label for="bladderTraining">ฝึกการกลั้นปัสสาวะ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="amt" name="activities" value="ประเมินภาวะสมองเสื่อม AMT"><label for="amt">ประเมินภาวะสมองเสื่อม AMT</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="pressureUlcer" name="activities" value="ประเมินแผลกดทับ"><label for="pressureUlcer">ประเมินแผลกดทับ</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="footPosition" name="activities" value="การจัดท่านอนป้องกันปลายเท้าตก"><label for="footPosition">การจัดท่านอนป้องกันปลายเท้าตก</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="transfer" name="activities" value="การเคลื่อนย้ายบนเตียงลงจากเตียง"><label for="transfer">การเคลื่อนย้ายบนเตียงลงจากเตียง</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="templeVisit" name="activities" value="กระตุ้นไปวัด"><label for="templeVisit">กระตุ้นไปวัด</label></div>
                     </div>
                 </div>
 
@@ -807,32 +481,125 @@
     </div>
 
     <script>
-        // Image Upload Handler
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+        // ===== ตรวจสอบสิทธิ์ =====
+        const userName = sessionStorage.getItem('userName');
+        const userRole = sessionStorage.getItem('userRole');
+        if (!userName || userRole === 'CM') {
+            window.location.href = userName ? 'admin.html' : 'login.html';
+        } else {
+            document.getElementById('userLabel').textContent = `${userName} (${userRole})`;
+            document.getElementById('caregiverName').value = userName;
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // ===== Utilities =====
+        function esc(str) {
+            if (str === undefined || str === null) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        async function apiGet(action, params) {
+            params = params || {};
+            const url = new URL(WEB_APP_URL);
+            url.searchParams.set('action', action);
+            Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+            const res = await fetch(url.toString());
+            return res.json();
+        }
+
+        function getUrlParam(name) {
+            return new URLSearchParams(window.location.search).get(name);
+        }
+
+        // ===== โหลดรายชื่อผู้สูงอายุที่ได้รับมอบหมาย =====
+        let elderlyList = [];
+
+        async function loadElderlyOptions() {
+            const select = document.getElementById('elderlySelect');
+            const json = await apiGet('getElderlyForStaff', { name: userName });
+            if (!json.success || json.data.length === 0) {
+                select.innerHTML = '<option value="">ไม่มีผู้สูงอายุที่ได้รับมอบหมาย</option>';
+                return;
+            }
+            elderlyList = json.data;
+            select.innerHTML = '<option value="">-- เลือกผู้สูงอายุ --</option>' +
+                elderlyList.map(r => `<option value="${r['รหัส']}">${esc(r['ชื่อ-สกุล'])}</option>`).join('');
+
+            const preselect = getUrlParam('elderlyId');
+            if (preselect && elderlyList.some(r => r['รหัส'] === preselect)) {
+                select.value = preselect;
+                showElderlyInfo(preselect);
+            }
+        }
+
+        function showElderlyInfo(id) {
+            const box = document.getElementById('elderlyInfoBox');
+            const row = elderlyList.find(r => r['รหัส'] === id);
+            if (!row) {
+                box.classList.remove('visible');
+                return;
+            }
+            let html = `
+                <div class="row"><span class="label">ระดับ ADL:</span> ${esc(row['ระดับ ADL'] || '-')}</div>
+                <div class="row"><span class="label">ความถี่การเยี่ยม:</span> ${esc(row['ความถี่การเยี่ยม'] || '-')}</div>`;
+            if (row['โรคประจำตัว']) html += `<div class="row"><span class="label">โรคประจำตัว:</span> ${esc(row['โรคประจำตัว'])}</div>`;
+            if (row['ข้อควรระวังพิเศษ']) html += `<div class="row"><span class="label">⚠️ ข้อควรระวัง:</span> ${esc(row['ข้อควรระวังพิเศษ'])}</div>`;
+            box.innerHTML = html;
+            box.classList.add('visible');
+
+            // โหลดเบอร์โทรครอบครัวเพิ่มเติมแบบ async (ไม่บล็อก UI)
+            apiGet('getFamily', { elderlyId: id }).then(famJson => {
+                if (famJson.success && famJson.data.length > 0) {
+                    const famHtml = famJson.data.map(f =>
+                        `<div class="row">👪 ${esc(f.name)} (${esc(f.relation)}): <span class="family-phone">${esc(f.phone)}</span></div>`
+                    ).join('');
+                    box.innerHTML += famHtml;
+                }
+            });
+        }
+
+        document.getElementById('elderlySelect').addEventListener('change', function () {
+            showElderlyInfo(this.value);
+        });
+
+        // ===== ตั้งค่าประจำเดือนอัตโนมัติ =====
+        function setDefaultMonthYear() {
+            const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+            const now = new Date();
+            document.getElementById('monthYear').value = `${months[now.getMonth()]} ${now.getFullYear() + 543}`;
+        }
+
+        // ===== Image Upload Handler =====
         const imageInput = document.getElementById('imageInput');
         const imagePreview = document.getElementById('imagePreview');
         let selectedImages = [];
 
-        imageInput.addEventListener('change', function(e) {
+        imageInput.addEventListener('change', function (e) {
             const files = Array.from(e.target.files);
-            
             if (selectedImages.length + files.length > 4) {
                 showAlert('สามารถอัปโหลดได้ไม่เกิน 4 รูปเท่านั้น', 'error');
                 return;
             }
-
             files.forEach(file => {
                 if (file.type.startsWith('image/')) {
                     selectedImages.push(file);
                     displayImage(file);
                 }
             });
-
             imageInput.value = '';
         });
 
         function displayImage(file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const div = document.createElement('div');
                 div.className = 'preview-item';
                 div.innerHTML = `
@@ -850,66 +617,60 @@
             selectedImages.forEach(file => displayImage(file));
         }
 
-        // Form Submit Handler
-        document.getElementById('careLogForm').addEventListener('submit', async function(e) {
+        // ===== Form Submit Handler =====
+        document.getElementById('careLogForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const submitText = document.getElementById('submitText');
             const originalText = submitText.textContent;
-            
+
+            const elderlySelect = document.getElementById('elderlySelect');
+            const elderlyName = elderlySelect.options[elderlySelect.selectedIndex]
+                ? elderlySelect.options[elderlySelect.selectedIndex].text
+                : '';
+
+            if (!elderlySelect.value) {
+                showAlert('กรุณาเลือกผู้สูงอายุ', 'error');
+                return;
+            }
+
             submitBtn.disabled = true;
             submitText.innerHTML = '<span class="loading"></span>กำลังบันทึก...';
 
             try {
-                // Collect form data
                 const formData = {
                     monthYear: document.getElementById('monthYear').value,
                     caregiverName: document.getElementById('caregiverName').value,
-                    elderlyName: document.getElementById('elderlyName').value,
+                    elderlyName: elderlyName,
                     visitDate: document.getElementById('visitDate').value,
                     startTime: document.getElementById('startTime').value,
                     endTime: document.getElementById('endTime').value,
                     bloodPressure: document.querySelector('input[name="bloodPressure"]').value,
                     pulse: document.querySelector('input[name="pulse"]').value,
                     bloodSugar: document.querySelector('input[name="bloodSugar"]').value,
-                    activities: Array.from(document.querySelectorAll('input[name="activities"]:checked'))
-                        .map(cb => cb.value).join(', '),
+                    activities: Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(cb => cb.value).join(', '),
                     assessment: document.getElementById('assessment').value,
                     timestamp: new Date().toISOString()
                 };
 
-                // Convert images to base64
-                const imagePromises = selectedImages.map(file => {
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = e => resolve(e.target.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
+                const imagePromises = selectedImages.map(file => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                }));
+                formData.images = await Promise.all(imagePromises);
 
-                const images = await Promise.all(imagePromises);
-                formData.images = images;
-
-                // Send to Google Apps Script Web App
-                const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
-                
-                // Using no-cors mode because Google Apps Script doesn't support CORS for POST
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(formData)
                 });
 
-                // With no-cors, we can't read the response, so we assume success
                 showAlert('ส่งข้อมูลสำเร็จ! กรุณาตรวจสอบใน Google Sheet', 'success');
-                setTimeout(() => {
-                    resetForm();
-                }, 2000);
+                setTimeout(() => { resetForm(); }, 2000);
 
             } catch (error) {
                 console.error('Error:', error);
@@ -922,11 +683,12 @@
 
         function resetForm() {
             document.getElementById('careLogForm').reset();
+            document.getElementById('caregiverName').value = userName;
+            document.getElementById('elderlyInfoBox').classList.remove('visible');
             selectedImages = [];
             imagePreview.innerHTML = '';
             document.getElementById('alertContainer').innerHTML = '';
-            
-            // Set default date to today
+            setDefaultMonthYear();
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('visitDate').value = today;
         }
@@ -935,76 +697,70 @@
             const alertContainer = document.getElementById('alertContainer');
             const icon = type === 'success' ? '✓' : '✕';
             const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
-            
             alertContainer.innerHTML = `
                 <div class="alert ${alertClass}">
                     <span class="alert-icon">${icon}</span>
                     <span>${message}</span>
-                </div>
-            `;
-
+                </div>`;
             if (type === 'success') {
-                setTimeout(() => {
-                    alertContainer.innerHTML = '';
-                }, 5000);
+                setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
             }
         }
 
         function previewReport() {
-            // Collect form data
+            const elderlySelect = document.getElementById('elderlySelect');
+            const elderlyName = elderlySelect.options[elderlySelect.selectedIndex]
+                ? elderlySelect.options[elderlySelect.selectedIndex].text
+                : '';
+
             const formData = {
                 monthYear: document.getElementById('monthYear').value,
                 caregiverName: document.getElementById('caregiverName').value,
-                elderlyName: document.getElementById('elderlyName').value,
+                elderlyName: elderlyName,
                 visitDate: document.getElementById('visitDate').value,
                 startTime: document.getElementById('startTime').value,
                 endTime: document.getElementById('endTime').value,
                 bloodPressure: document.querySelector('input[name="bloodPressure"]').value,
                 pulse: document.querySelector('input[name="pulse"]').value,
                 bloodSugar: document.querySelector('input[name="bloodSugar"]').value,
-                activities: Array.from(document.querySelectorAll('input[name="activities"]:checked'))
-                    .map(cb => cb.value).join(', '),
+                activities: Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(cb => cb.value).join(', '),
                 assessment: document.getElementById('assessment').value
             };
 
-            // Validate required fields
             if (!formData.caregiverName || !formData.elderlyName || !formData.visitDate) {
-                showAlert('กรุณากรอกข้อมูลที่จำเป็น (ชื่อสหวิชาชีพ, ชื่อผู้สูงอายุ, วันที่)', 'error');
+                showAlert('กรุณากรอกข้อมูลที่จำเป็น (ผู้สูงอายุ, วันที่)', 'error');
                 return;
             }
 
-            // Convert images to base64
-            const imagePromises = selectedImages.map(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve(e.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            });
+            const imagePromises = selectedImages.map(file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            }));
 
             Promise.all(imagePromises).then(images => {
                 formData.images = images;
-
-                // Save to localStorage
                 localStorage.setItem('reportData', JSON.stringify(formData));
-
-                // Open report page in new tab
                 window.open('print-report.html', '_blank');
-            }).catch(error => {
-                console.error('Error converting images:', error);
-                // Save without images if error
+            }).catch(() => {
                 formData.images = [];
                 localStorage.setItem('reportData', JSON.stringify(formData));
                 window.open('print-report.html', '_blank');
             });
         }
 
-        // Set default date to today on page load
-        window.addEventListener('DOMContentLoaded', function() {
+        // ===== Init =====
+        window.addEventListener('DOMContentLoaded', function () {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('visitDate').value = today;
+            setDefaultMonthYear();
         });
+
+        if (userName && userRole !== 'CM') {
+            loadElderlyOptions();
+        }
     </script>
+
 </body>
 </html>
