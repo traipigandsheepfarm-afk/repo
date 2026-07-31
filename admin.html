@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผงควบคุมแอดมิน - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f4f6fb;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --error: #ef4444;
+        --success: #10b981;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: var(--background);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .topbar h1 { font-size: 1.15rem; font-weight: 700; }
+    .topbar .sub { font-size: 0.8rem; opacity: 0.9; }
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(255,255,255,0.15);
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+    }
+    .user-chip button {
+        background: white;
+        color: var(--primary-dark);
+        border: none;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem 1.75rem 0;
+        overflow-x: auto;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+        color: var(--primary-dark);
+        border-bottom-color: var(--primary);
+        font-weight: 700;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.75rem; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    .panel-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .panel-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+    }
+    .card h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.1rem;
+        padding-bottom: 0.65rem;
+        border-bottom: 2px solid var(--primary-light);
+    }
+
+    .form-group { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    label { font-size: 0.85rem; font-weight: 500; color: var(--text-primary); }
+    input, select, textarea {
+        padding: 0.7rem 0.85rem;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: var(--surface);
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    textarea { min-height: 70px; resize: vertical; }
+
+    .btn {
+        padding: 0.7rem 1.25rem;
+        border: none;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; width: 100%; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .btn-secondary { background: var(--background); color: var(--text-primary); border: 2px solid var(--border); }
+    .btn-danger { background: #fee2e2; color: #991b1b; }
+    .btn-sm { padding: 0.35rem 0.7rem; font-size: 0.78rem; border-radius: 8px; }
+    .btn-row { display: flex; gap: 0.5rem; }
+    .btn-row .btn { flex: 1; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.65rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--text-secondary); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    tr:hover td { background: #fafbff; }
+    .table-wrap { overflow-x: auto; }
+    .actions-cell { white-space: nowrap; display: flex; gap: 0.4rem; }
+    .empty-row td { text-align: center; color: var(--text-secondary); padding: 2rem; }
+
+    .badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .badge-cm { background: #fef3c7; color: #92400e; }
+    .badge-staff { background: #dbeafe; color: #1e40af; }
+    .badge-cg { background: #dcfce7; color: #166534; }
+    .badge-status-ok { background: #dcfce7; color: #166534; }
+    .badge-status-watch { background: #fef3c7; color: #92400e; }
+    .badge-status-end { background: #f1f5f9; color: #64748b; }
+
+    .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        padding: 0.85rem 1.25rem;
+        border-radius: 12px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        z-index: 100;
+        display: none;
+        animation: slideIn 0.3s ease;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+    @keyframes slideIn { from { transform: translateX(30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+
+    .hint { font-size: 0.78rem; color: var(--text-secondary); margin-top: -0.3rem; margin-bottom: 0.6rem; }
+    .form-actions-inline { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .form-actions-inline .btn { flex: 1; }
+    .pin-cell { font-family: monospace; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div>
+        <h1>🛠️ แผงควบคุมแอดมิน (CM)</h1>
+        <div class="sub">ระบบบันทึกการดูแลผู้สูงอายุ — ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</div>
+    </div>
+    <div class="user-chip">
+        <span id="userLabel">กำลังตรวจสอบสิทธิ์...</span>
+        <button onclick="logout()">ออกจากระบบ</button>
+    </div>
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" data-tab="elderly">👵 ผู้สูงอายุ</button>
+    <button class="tab-btn" data-tab="assign">🔗 มอบหมายดูแล</button>
+    <button class="tab-btn" data-tab="users">👤 ผู้ใช้งานระบบ</button>
+    <button class="tab-btn" data-tab="family">👪 ครอบครัวผู้ดูแล</button>
+</div>
+
+<div class="container">
+
+    <!-- ================= TAB: ผู้สูงอายุ ================= -->
+    <div class="tab-panel active" id="tab-elderly">
+        <div class="panel-grid">
+            <div class="card">
+                <h2 id="elderlyFormTitle">➕ เพิ่มผู้สูงอายุ</h2>
+                <form id="elderlyForm">
+                    <input type="hidden" id="e_id">
+                    <div class="form-group">
+                        <label>ชื่อ-สกุล</label>
+                        <input type="text" id="e_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ที่อยู่</label>
+                        <input type="text" id="e_address">
+                    </div>
+                    <div class="form-group">
+                        <label>ระดับ ADL / การช่วยเหลือตนเอง</label>
+                        <select id="e_adl">
+                            <option value="ช่วยเหลือตนเองได้">ช่วยเหลือตนเองได้</option>
+                            <option value="ช่วยเหลือตนเองได้บางส่วน">ช่วยเหลือตนเองได้บางส่วน</option>
+                            <option value="ติดบ้าน">ติดบ้าน</option>
+                            <option value="ติดเตียง">ติดเตียง</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ความถี่การเยี่ยม</label>
+                        <select id="e_frequency">
+                            <option value="ทุกวัน">ทุกวัน</option>
+                            <option value="สัปดาห์ละครั้ง">สัปดาห์ละครั้ง</option>
+                            <option value="2 สัปดาห์ครั้ง">2 สัปดาห์ครั้ง</option>
+                            <option value="เดือนละครั้ง">เดือนละครั้ง</option>
+                            <option value="ตามนัด">ตามนัด</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>โรคประจำตัว</label>
+                        <input type="text" id="e_conditions" placeholder="เช่น เบาหวาน, ความดันโลหิตสูง">
+                    </div>
+                    <div class="form-group">
+                        <label>ข้อควรระวังพิเศษ</label>
+                        <textarea id="e_precautions" placeholder="เช่น แพ้ยา, เสี่ยงหกล้ม"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>สถานะ</label>
+                        <select id="e_status">
+                            <option value="ปกติ">ปกติ</option>
+                            <option value="เฝ้าระวัง">เฝ้าระวัง</option>
+                            <option value="ยุติการดูแล">ยุติการดูแล</option>
+                        </select>
+                    </div>
+                    <div class="form-actions-inline">
+                        <button type="submit" class="btn btn-primary" id="e_submitBtn">บันทึกข้อมูล</button>
+                        <button type="button" class="btn btn-secondary" id="e_cancelBtn" style="display:none;" onclick="resetElderlyForm()">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>รายชื่อผู้สูงอายุทั้งหมด</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ชื่อ-สกุล</th><th>ADL</th><th>ความถี่เยี่ยม</th><th>สถานะ</th><th>จัดการ</th></tr>
+                        </thead>
+                        <tbody id="elderlyTableBody">
+                            <tr class="empty-row"><td colspan="5">กำลังโหลด...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: มอบหมายดูแล ================= -->
+    <div class="tab-panel" id="tab-assign">
+        <div class="panel-grid">
+            <div class="card">
+                <h2>🔗 มอบหมายผู้ดูแล</h2>
+                <form id="assignForm">
+                    <div class="form-group">
+                        <label>ผู้สูงอายุ</label>
+                        <select id="a_elderly" required>
+                            <option value="">-- เลือกผู้สูงอายุ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ประเภทผู้ดูแล</label>
+                        <select id="a_type" required>
+                            <option value="สหวิชาชีพ">สหวิชาชีพ</option>
+                            <option value="CG">CG</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อผู้ดูแล</label>
+                        <select id="a_staff" required>
+                            <option value="">-- เลือกผู้ดูแล --</option>
+                        </select>
+                    </div>
+                    <div class="hint">1 ผู้สูงอายุ สามารถมีได้ทั้งสหวิชาชีพและ CG หลายคน</div>
+                    <button type="submit" class="btn btn-primary">➕ เพิ่มการมอบหมาย</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>รายการมอบหมายทั้งหมด</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ผู้สูงอายุ</th><th>ประเภท</th><th>ผู้ดูแล</th><th>จัดการ</th></tr>
+                        </thead>
+                        <tbody id="assignTableBody">
+                            <tr class="empty-row"><td colspan="4">กำลังโหลด...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: ผู้ใช้งานระบบ ================= -->
+    <div class="tab-panel" id="tab-users">
+        <div class="panel-grid">
+            <div class="card">
+                <h2 id="userFormTitle">➕ เพิ่มผู้ใช้งาน</h2>
+                <form id="userForm">
+                    <input type="hidden" id="u_id">
+                    <div class="form-group">
+                        <label>ชื่อ-สกุล</label>
+                        <input type="text" id="u_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>บทบาท</label>
+                        <select id="u_role">
+                            <option value="สหวิชาชีพ">สหวิชาชีพ</option>
+                            <option value="CG">CG</option>
+                            <option value="CM">CM</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>รหัส PIN (4-6 หลัก)</label>
+                        <input type="text" id="u_pin" inputmode="numeric" maxlength="6" required>
+                    </div>
+                    <div class="form-actions-inline">
+                        <button type="submit" class="btn btn-primary" id="u_submitBtn">บันทึกข้อมูล</button>
+                        <button type="button" class="btn btn-secondary" id="u_cancelBtn" style="display:none;" onclick="resetUserForm()">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>ผู้ใช้งานระบบทั้งหมด</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ชื่อ-สกุล</th><th>บทบาท</th><th>PIN</th><th>จัดการ</th></tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <tr class="empty-row"><td colspan="4">กำลังโหลด...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: ครอบครัวผู้ดูแล ================= -->
+    <div class="tab-panel" id="tab-family">
+        <div class="panel-grid">
+            <div class="card">
+                <h2 id="familyFormTitle">➕ เพิ่มสมาชิกครอบครัว</h2>
+                <form id="familyForm">
+                    <input type="hidden" id="f_id">
+                    <div class="form-group">
+                        <label>ผู้สูงอายุ</label>
+                        <select id="f_elderly" required>
+                            <option value="">-- เลือกผู้สูงอายุ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อผู้ดูแลในครอบครัว</label>
+                        <input type="text" id="f_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ความสัมพันธ์</label>
+                        <select id="f_relation">
+                            <option value="บุตร">บุตร</option>
+                            <option value="บุตรสะใภ้/บุตรเขย">บุตรสะใภ้/บุตรเขย</option>
+                            <option value="หลาน">หลาน</option>
+                            <option value="คู่สมรส">คู่สมรส</option>
+                            <option value="ญาติ">ญาติ</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>เบอร์โทรติดต่อ</label>
+                        <input type="tel" id="f_phone" placeholder="08xxxxxxxx" required>
+                    </div>
+                    <div class="form-actions-inline">
+                        <button type="submit" class="btn btn-primary" id="f_submitBtn">บันทึกข้อมูล</button>
+                        <button type="button" class="btn btn-secondary" id="f_cancelBtn" style="display:none;" onclick="resetFamilyForm()">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>สมาชิกครอบครัวทั้งหมด</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ผู้สูงอายุ</th><th>ชื่อผู้ดูแล</th><th>ความสัมพันธ์</th><th>เบอร์โทร</th><th>จัดการ</th></tr>
+                        </thead>
+                        <tbody id="familyTableBody">
+                            <tr class="empty-row"><td colspan="5">กำลังโหลด...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    // ===== ตรวจสอบสิทธิ์เข้าใช้งาน =====
+    const userName = sessionStorage.getItem('userName');
+    const userRole = sessionStorage.getItem('userRole');
+    if (!userName || userRole !== 'CM') {
+        window.location.href = 'login.html';
+    } else {
+        document.getElementById('userLabel').textContent = `${userName} (CM)`;
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    // ===== Utilities =====
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast ' + (type || 'success');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    function roleBadge(role) {
+        if (role === 'CM') return `<span class="badge badge-cm">CM</span>`;
+        if (role === 'CG') return `<span class="badge badge-cg">CG</span>`;
+        return `<span class="badge badge-staff">สหวิชาชีพ</span>`;
+    }
+
+    function statusBadge(status) {
+        if (status === 'เฝ้าระวัง') return `<span class="badge badge-status-watch">เฝ้าระวัง</span>`;
+        if (status === 'ยุติการดูแล') return `<span class="badge badge-status-end">ยุติการดูแล</span>`;
+        return `<span class="badge badge-status-ok">ปกติ</span>`;
+    }
+
+    // ===== Tabs =====
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        });
+    });
+
+    // ==============================================================
+    // ผู้สูงอายุ
+    // ==============================================================
+    let elderlyCache = [];
+
+    async function loadElderly() {
+        const json = await apiGet('getAllElderly');
+        const tbody = document.getElementById('elderlyTableBody');
+        if (!json.success || json.data.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="5">ยังไม่มีข้อมูลผู้สูงอายุ</td></tr>';
+            elderlyCache = [];
+            populateElderlySelects([]);
+            return;
+        }
+        elderlyCache = json.data;
+        tbody.innerHTML = json.data.map(row => `
+            <tr>
+                <td><strong>${esc(row['ชื่อ-สกุล'])}</strong><br><span style="color:var(--text-secondary);font-size:0.78rem;">${esc(row['ที่อยู่'])}</span></td>
+                <td>${esc(row['ระดับ ADL'])}</td>
+                <td>${esc(row['ความถี่การเยี่ยม'])}</td>
+                <td>${statusBadge(row['สถานะ'])}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" onclick="editElderly('${row['รหัส']}')">แก้ไข</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteElderly('${row['รหัส']}')">ลบ</button>
+                </td>
+            </tr>
+        `).join('');
+        populateElderlySelects(json.data);
+    }
+
+    function populateElderlySelects(list) {
+        const options = '<option value="">-- เลือกผู้สูงอายุ --</option>' +
+            list.map(r => `<option value="${r['รหัส']}">${esc(r['ชื่อ-สกุล'])}</option>`).join('');
+        document.getElementById('a_elderly').innerHTML = options;
+        document.getElementById('f_elderly').innerHTML = options;
+    }
+
+    document.getElementById('elderlyForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const id = document.getElementById('e_id').value;
+        const payload = {
+            id: id || undefined,
+            name: document.getElementById('e_name').value.trim(),
+            address: document.getElementById('e_address').value.trim(),
+            adl: document.getElementById('e_adl').value,
+            frequency: document.getElementById('e_frequency').value,
+            conditions: document.getElementById('e_conditions').value.trim(),
+            precautions: document.getElementById('e_precautions').value.trim(),
+            status: document.getElementById('e_status').value
+        };
+        const btn = document.getElementById('e_submitBtn');
+        btn.disabled = true;
+        try {
+            const json = await apiGet('adminSaveElderly', { data: JSON.stringify(payload) });
+            if (json.success) {
+                showToast('บันทึกข้อมูลผู้สูงอายุสำเร็จ', 'success');
+                resetElderlyForm();
+                loadElderly();
+            } else {
+                showToast(json.message || 'บันทึกไม่สำเร็จ', 'error');
+            }
+        } catch (err) {
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+        }
+        btn.disabled = false;
+    });
+
+    function editElderly(id) {
+        const row = elderlyCache.find(r => r['รหัส'] === id);
+        if (!row) return;
+        document.getElementById('e_id').value = row['รหัส'];
+        document.getElementById('e_name').value = row['ชื่อ-สกุล'] || '';
+        document.getElementById('e_address').value = row['ที่อยู่'] || '';
+        document.getElementById('e_adl').value = row['ระดับ ADL'] || 'ช่วยเหลือตนเองได้';
+        document.getElementById('e_frequency').value = row['ความถี่การเยี่ยม'] || 'ทุกวัน';
+        document.getElementById('e_conditions').value = row['โรคประจำตัว'] || '';
+        document.getElementById('e_precautions').value = row['ข้อควรระวังพิเศษ'] || '';
+        document.getElementById('e_status').value = row['สถานะ'] || 'ปกติ';
+        document.getElementById('elderlyFormTitle').textContent = '✏️ แก้ไขข้อมูลผู้สูงอายุ';
+        document.getElementById('e_submitBtn').textContent = 'บันทึกการแก้ไข';
+        document.getElementById('e_cancelBtn').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetElderlyForm() {
+        document.getElementById('elderlyForm').reset();
+        document.getElementById('e_id').value = '';
+        document.getElementById('elderlyFormTitle').textContent = '➕ เพิ่มผู้สูงอายุ';
+        document.getElementById('e_submitBtn').textContent = 'บันทึกข้อมูล';
+        document.getElementById('e_cancelBtn').style.display = 'none';
+    }
+
+    async function deleteElderly(id) {
+        if (!confirm('ยืนยันการลบข้อมูลผู้สูงอายุนี้? (ข้อมูลการมอบหมายและครอบครัวที่เกี่ยวข้องจะไม่ถูกลบอัตโนมัติ)')) return;
+        const json = await apiGet('adminDeleteElderly', { id });
+        if (json.success) {
+            showToast('ลบข้อมูลสำเร็จ', 'success');
+            loadElderly();
+        } else {
+            showToast(json.message || 'ลบไม่สำเร็จ', 'error');
+        }
+    }
+
+    // ==============================================================
+    // มอบหมายดูแล
+    // ==============================================================
+    let assignCache = [];
+
+    async function loadStaffOptionsForAssign() {
+        const type = document.getElementById('a_type').value;
+        const role = type === 'CG' ? 'CG' : 'สหวิชาชีพ';
+        const json = await apiGet('getStaffList', { role });
+        const select = document.getElementById('a_staff');
+        if (json.success && json.data.length > 0) {
+            select.innerHTML = '<option value="">-- เลือกผู้ดูแล --</option>' +
+                json.data.map(u => `<option value="${esc(u.name)}">${esc(u.name)}</option>`).join('');
+        } else {
+            select.innerHTML = '<option value="">ไม่มีผู้ใช้งานบทบาทนี้</option>';
+        }
+    }
+    document.getElementById('a_type').addEventListener('change', loadStaffOptionsForAssign);
+
+    async function loadAssignments() {
+        const json = await apiGet('getAssignments');
+        const tbody = document.getElementById('assignTableBody');
+        if (!json.success || json.data.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="4">ยังไม่มีการมอบหมาย</td></tr>';
+            assignCache = [];
+            return;
+        }
+        assignCache = json.data;
+        tbody.innerHTML = json.data.map(row => `
+            <tr>
+                <td>${esc(row.elderlyName)}</td>
+                <td>${row.type === 'CG' ? '<span class="badge badge-cg">CG</span>' : '<span class="badge badge-staff">สหวิชาชีพ</span>'}</td>
+                <td>${esc(row.staffName)}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAssignment('${row.id}')">ลบ</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('assignForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const elderlyId = document.getElementById('a_elderly').value;
+        const elderlyRow = elderlyCache.find(r => r['รหัส'] === elderlyId);
+        if (!elderlyRow) { showToast('กรุณาเลือกผู้สูงอายุ', 'error'); return; }
+
+        const payload = {
+            elderlyId: elderlyId,
+            elderlyName: elderlyRow['ชื่อ-สกุล'],
+            type: document.getElementById('a_type').value,
+            staffName: document.getElementById('a_staff').value
+        };
+        if (!payload.staffName) { showToast('กรุณาเลือกผู้ดูแล', 'error'); return; }
+
+        const json = await apiGet('adminSaveAssignment', { data: JSON.stringify(payload) });
+        if (json.success) {
+            showToast('เพิ่มการมอบหมายสำเร็จ', 'success');
+            document.getElementById('assignForm').reset();
+            loadAssignments();
+        } else {
+            showToast(json.message || 'เพิ่มไม่สำเร็จ', 'error');
+        }
+    });
+
+    async function deleteAssignment(id) {
+        if (!confirm('ยืนยันการลบการมอบหมายนี้?')) return;
+        const json = await apiGet('adminDeleteAssignment', { id });
+        if (json.success) {
+            showToast('ลบสำเร็จ', 'success');
+            loadAssignments();
+        } else {
+            showToast(json.message || 'ลบไม่สำเร็จ', 'error');
+        }
+    }
+
+    // ==============================================================
+    // ผู้ใช้งานระบบ
+    // ==============================================================
+    let userCache = [];
+
+    async function loadUsers() {
+        const json = await apiGet('getUsers');
+        const tbody = document.getElementById('userTableBody');
+        if (!json.success || json.data.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="4">ยังไม่มีผู้ใช้งาน</td></tr>';
+            userCache = [];
+            return;
+        }
+        userCache = json.data;
+        tbody.innerHTML = json.data.map(row => `
+            <tr>
+                <td>${esc(row.name)}</td>
+                <td>${roleBadge(row.role)}</td>
+                <td class="pin-cell">${esc(row.pin)}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" onclick="editUser('${row.id}')">แก้ไข</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteUser('${row.id}')">ลบ</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('userForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const id = document.getElementById('u_id').value;
+        const payload = {
+            id: id || undefined,
+            name: document.getElementById('u_name').value.trim(),
+            role: document.getElementById('u_role').value,
+            pin: document.getElementById('u_pin').value.trim()
+        };
+        if (!/^\d{4,6}$/.test(payload.pin)) {
+            showToast('PIN ต้องเป็นตัวเลข 4-6 หลัก', 'error');
+            return;
+        }
+        const json = await apiGet('adminSaveUser', { data: JSON.stringify(payload) });
+        if (json.success) {
+            showToast('บันทึกผู้ใช้งานสำเร็จ', 'success');
+            resetUserForm();
+            loadUsers();
+        } else {
+            showToast(json.message || 'บันทึกไม่สำเร็จ', 'error');
+        }
+    });
+
+    function editUser(id) {
+        const row = userCache.find(r => r.id === id);
+        if (!row) return;
+        document.getElementById('u_id').value = row.id;
+        document.getElementById('u_name').value = row.name;
+        document.getElementById('u_role').value = row.role;
+        document.getElementById('u_pin').value = row.pin;
+        document.getElementById('userFormTitle').textContent = '✏️ แก้ไขผู้ใช้งาน';
+        document.getElementById('u_submitBtn').textContent = 'บันทึกการแก้ไข';
+        document.getElementById('u_cancelBtn').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetUserForm() {
+        document.getElementById('userForm').reset();
+        document.getElementById('u_id').value = '';
+        document.getElementById('userFormTitle').textContent = '➕ เพิ่มผู้ใช้งาน';
+        document.getElementById('u_submitBtn').textContent = 'บันทึกข้อมูล';
+        document.getElementById('u_cancelBtn').style.display = 'none';
+    }
+
+    async function deleteUser(id) {
+        if (!confirm('ยืนยันการลบผู้ใช้งานนี้?')) return;
+        const json = await apiGet('adminDeleteUser', { id });
+        if (json.success) {
+            showToast('ลบสำเร็จ', 'success');
+            loadUsers();
+        } else {
+            showToast(json.message || 'ลบไม่สำเร็จ', 'error');
+        }
+    }
+
+    // ==============================================================
+    // ครอบครัวผู้ดูแล
+    // ==============================================================
+    let familyCache = [];
+
+    async function loadFamily() {
+        const json = await apiGet('getAllFamily');
+        const tbody = document.getElementById('familyTableBody');
+        if (!json.success || json.data.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="5">ยังไม่มีข้อมูลครอบครัว</td></tr>';
+            familyCache = [];
+            return;
+        }
+        familyCache = json.data;
+        tbody.innerHTML = json.data.map(row => {
+            const elderly = elderlyCache.find(e => e['รหัส'] === row.elderlyId);
+            const elderlyName = elderly ? elderly['ชื่อ-สกุล'] : row.elderlyId;
+            return `
+            <tr>
+                <td>${esc(elderlyName)}</td>
+                <td>${esc(row.name)}</td>
+                <td>${esc(row.relation)}</td>
+                <td>${esc(row.phone)}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" onclick="editFamily('${row.id}')">แก้ไข</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteFamily('${row.id}')">ลบ</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    document.getElementById('familyForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const id = document.getElementById('f_id').value;
+        const payload = {
+            id: id || undefined,
+            elderlyId: document.getElementById('f_elderly').value,
+            name: document.getElementById('f_name').value.trim(),
+            relation: document.getElementById('f_relation').value,
+            phone: document.getElementById('f_phone').value.trim()
+        };
+        if (!payload.elderlyId) { showToast('กรุณาเลือกผู้สูงอายุ', 'error'); return; }
+
+        const json = await apiGet('adminSaveFamily', { data: JSON.stringify(payload) });
+        if (json.success) {
+            showToast('บันทึกข้อมูลครอบครัวสำเร็จ', 'success');
+            resetFamilyForm();
+            loadFamily();
+        } else {
+            showToast(json.message || 'บันทึกไม่สำเร็จ', 'error');
+        }
+    });
+
+    function editFamily(id) {
+        const row = familyCache.find(r => r.id === id);
+        if (!row) return;
+        document.getElementById('f_id').value = row.id;
+        document.getElementById('f_elderly').value = row.elderlyId;
+        document.getElementById('f_name').value = row.name;
+        document.getElementById('f_relation').value = row.relation;
+        document.getElementById('f_phone').value = row.phone;
+        document.getElementById('familyFormTitle').textContent = '✏️ แก้ไขสมาชิกครอบครัว';
+        document.getElementById('f_submitBtn').textContent = 'บันทึกการแก้ไข';
+        document.getElementById('f_cancelBtn').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetFamilyForm() {
+        document.getElementById('familyForm').reset();
+        document.getElementById('f_id').value = '';
+        document.getElementById('familyFormTitle').textContent = '➕ เพิ่มสมาชิกครอบครัว';
+        document.getElementById('f_submitBtn').textContent = 'บันทึกข้อมูล';
+        document.getElementById('f_cancelBtn').style.display = 'none';
+    }
+
+    async function deleteFamily(id) {
+        if (!confirm('ยืนยันการลบข้อมูลนี้?')) return;
+        const json = await apiGet('adminDeleteFamily', { id });
+        if (json.success) {
+            showToast('ลบสำเร็จ', 'success');
+            loadFamily();
+        } else {
+            showToast(json.message || 'ลบไม่สำเร็จ', 'error');
+        }
+    }
+
+    // ===== Init =====
+    async function init() {
+        await loadElderly();
+        await loadStaffOptionsForAssign();
+        await loadAssignments();
+        await loadUsers();
+        await loadFamily();
+    }
+    init();
+</script>
+
+</body>
+</html>
