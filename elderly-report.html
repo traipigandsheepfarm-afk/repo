@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานการให้บริการรายบุคคล - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f4f6fb;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --star: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: var(--background);
+        color: var(--text-primary);
+        padding: 1.5rem;
+    }
+
+    .toolbar {
+        max-width: 900px;
+        margin: 0 auto 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .toolbar a.back-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .toolbar-actions { display: flex; gap: 0.6rem; }
+    .toolbar button {
+        padding: 0.65rem 1.3rem;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+    }
+    .btn-print { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+
+    .search-box {
+        max-width: 900px;
+        margin: 0 auto 1.25rem;
+        background: var(--surface);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        border: 1px solid var(--border);
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .search-box select {
+        flex: 1;
+        min-width: 220px;
+        padding: 0.7rem 0.9rem;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.95rem;
+    }
+    .search-box button {
+        padding: 0.7rem 1.3rem;
+        border-radius: 10px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-family: inherit;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .sheet {
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--surface);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+        overflow: hidden;
+    }
+
+    .report-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 2.25rem;
+    }
+    .report-header .kicker { font-size: 0.82rem; opacity: 0.85; margin-bottom: 0.3rem; }
+    .report-header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .report-header .meta-inline { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.88rem; opacity: 0.95; }
+
+    .report-body { padding: 2rem 2.25rem 2.5rem; }
+
+    .care-plan-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.9rem 2rem;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+    .care-plan-grid .item { display: flex; flex-direction: column; gap: 0.15rem; }
+    .care-plan-grid .label { font-size: 0.78rem; color: var(--text-secondary); }
+    .care-plan-grid .value { font-size: 0.98rem; font-weight: 600; }
+
+    .section { margin-bottom: 2rem; }
+    .section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 0.9rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .summary-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .chip {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .visit-item {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.85rem;
+    }
+    .visit-item .visit-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    .visit-item .visit-date { font-weight: 700; }
+    .visit-item .visit-staff { font-size: 0.85rem; color: var(--text-secondary); }
+    .visit-item .visit-vitals { display: flex; gap: 1.25rem; font-size: 0.85rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .visit-item .visit-vitals span strong { color: var(--primary-dark); }
+    .visit-item .visit-activities { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .visit-item .visit-assessment { font-size: 0.88rem; background: var(--background); border-radius: 8px; padding: 0.6rem 0.8rem; }
+
+    .survey-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.9rem 1.2rem;
+        margin-bottom: 0.7rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .survey-item .stars { color: var(--star); font-size: 1.1rem; }
+    .survey-item .survey-meta { font-size: 0.82rem; color: var(--text-secondary); }
+    .survey-item .survey-comment { font-size: 0.85rem; margin-top: 0.3rem; width: 100%; color: var(--text-primary); }
+
+    .empty-note { color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 1.5rem; }
+
+    .loading-state { text-align: center; padding: 4rem 1rem; color: var(--text-secondary); }
+
+    @media print {
+        body { background: white; padding: 0; }
+        .toolbar, .search-box { display: none; }
+        .sheet { box-shadow: none; border-radius: 0; max-width: 100%; }
+        .report-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .visit-item, .survey-item { break-inside: avoid; }
+    }
+
+    @media (max-width: 640px) {
+        .care-plan-grid { grid-template-columns: 1fr; }
+        .report-body { padding: 1.5rem 1.25rem; }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <a class="back-link" href="staff-dashboard.html">← กลับหน้ารายชื่อผู้สูงอายุ</a>
+    <div class="toolbar-actions">
+        <button class="btn-print" onclick="window.print()">🖨️ พิมพ์ / บันทึกเป็น PDF</button>
+    </div>
+</div>
+
+<div class="search-box" id="searchBox">
+    <select id="elderlySelect">
+        <option value="">-- เลือกผู้สูงอายุเพื่อดูรายงาน --</option>
+    </select>
+    <button onclick="goToSelected()">ดูรายงาน</button>
+</div>
+
+<div id="loadingState" class="loading-state" style="display:none;">กำลังโหลดข้อมูล...</div>
+
+<div class="sheet" id="reportSheet" style="display:none;">
+    <div class="report-header">
+        <div class="kicker">รายงานการให้บริการรายบุคคล</div>
+        <h1 id="elderlyName">-</h1>
+        <div class="meta-inline">
+            <span id="elderlyAddress"></span>
+        </div>
+    </div>
+    <div class="report-body" id="reportBody"></div>
+</div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    function formatThaiDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+        } catch (e) { return dateStr; }
+    }
+
+    function starsHtml(score) {
+        const n = parseInt(score) || 0;
+        return '★'.repeat(n) + '☆'.repeat(5 - n);
+    }
+
+    async function loadElderlySelect() {
+        const json = await apiGet('getAllElderly');
+        if (json.success) {
+            document.getElementById('elderlySelect').innerHTML =
+                '<option value="">-- เลือกผู้สูงอายุเพื่อดูรายงาน --</option>' +
+                json.data.map(r => `<option value="${r['รหัส']}">${esc(r['ชื่อ-สกุล'])}</option>`).join('');
+        }
+    }
+
+    function goToSelected() {
+        const id = document.getElementById('elderlySelect').value;
+        if (id) window.location.href = 'elderly-report.html?id=' + encodeURIComponent(id);
+    }
+
+    async function loadReport(id) {
+        document.getElementById('searchBox').style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+
+        const [detailRes, visitRes, surveyRes] = await Promise.all([
+            apiGet('getElderlyDetail', { id }),
+            apiGet('getVisitHistory', { elderlyId: id }),
+            apiGet('getSurveys', { elderlyId: id })
+        ]);
+
+        document.getElementById('loadingState').style.display = 'none';
+
+        if (!detailRes.success) {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('loadingState').textContent = 'ไม่พบข้อมูลผู้สูงอายุนี้';
+            return;
+        }
+
+        const elderly = detailRes.data.elderly;
+        const family = detailRes.data.family;
+        const assignments = detailRes.data.assignments;
+        const visits = visitRes.success ? visitRes.data : [];
+        const surveys = surveyRes.success ? surveyRes.data : [];
+
+        document.getElementById('elderlyName').textContent = elderly['ชื่อ-สกุล'];
+        document.getElementById('elderlyAddress').textContent = elderly['ที่อยู่'] || '';
+
+        const staffList = assignments.map(a => `${a.staffName} (${a.type})`).join(', ') || 'ยังไม่มีการมอบหมาย';
+        const familyHtml = family.length
+            ? family.map(f => `<div class="item"><span class="label">${esc(f.relation)}</span><span class="value">${esc(f.name)} — ${esc(f.phone)}</span></div>`).join('')
+            : `<div class="item"><span class="value" style="color:var(--text-secondary);font-weight:400;">ยังไม่มีข้อมูลครอบครัว</span></div>`;
+
+        const avgScore = surveys.length
+            ? (surveys.reduce((sum, s) => sum + (parseInt(s.score) || 0), 0) / surveys.length).toFixed(1)
+            : null;
+
+        const visitsHtml = visits.length
+            ? visits.slice().reverse().map(v => `
+                <div class="visit-item">
+                    <div class="visit-top">
+                        <span class="visit-date">${formatThaiDate(v['วันที่เยี่ยม'])} (${esc(v['เวลาเริ่ม'])} - ${esc(v['เวลาสิ้นสุด'])})</span>
+                        <span class="visit-staff">ผู้ให้บริการ: ${esc(v['ชื่อ-สกุล (สหวิชาชีพ)'])}</span>
+                    </div>
+                    <div class="visit-vitals">
+                        <span>BP: <strong>${esc(v['ความดันโลหิต (mmHg)']) || '-'}</strong></span>
+                        <span>ชีพจร: <strong>${esc(v['ชีพจร (ครั้ง/นาที)']) || '-'}</strong></span>
+                        <span>น้ำตาล: <strong>${esc(v['น้ำตาลในเลือด (mg/dl)']) || '-'}</strong></span>
+                    </div>
+                    ${v['กิจกรรมที่ปฏิบัติ'] ? `<div class="visit-activities">กิจกรรม: ${esc(v['กิจกรรมที่ปฏิบัติ'])}</div>` : ''}
+                    ${v['ผลการประเมิน'] ? `<div class="visit-assessment">${esc(v['ผลการประเมิน'])}</div>` : ''}
+                </div>`).join('')
+            : `<div class="empty-note">ยังไม่มีประวัติการให้บริการ</div>`;
+
+        const surveysHtml = surveys.length
+            ? surveys.slice().reverse().map(s => `
+                <div class="survey-item">
+                    <div>
+                        <div class="stars">${starsHtml(s.score)}</div>
+                        <div class="survey-meta">${formatThaiDate(s.visitDate)} — ผู้ให้บริการ: ${esc(s.staffName)}</div>
+                        ${s.comment ? `<div class="survey-comment">"${esc(s.comment)}"</div>` : ''}
+                    </div>
+                </div>`).join('')
+            : `<div class="empty-note">ยังไม่มีแบบประเมินความพึงพอใจ</div>`;
+
+        document.getElementById('reportBody').innerHTML = `
+            <div class="care-plan-grid">
+                <div class="item"><span class="label">ระดับ ADL</span><span class="value">${esc(elderly['ระดับ ADL']) || '-'}</span></div>
+                <div class="item"><span class="label">ความถี่การเยี่ยม</span><span class="value">${esc(elderly['ความถี่การเยี่ยม']) || '-'}</span></div>
+                <div class="item"><span class="label">โรคประจำตัว</span><span class="value">${esc(elderly['โรคประจำตัว']) || '-'}</span></div>
+                <div class="item"><span class="label">ข้อควรระวังพิเศษ</span><span class="value">${esc(elderly['ข้อควรระวังพิเศษ']) || '-'}</span></div>
+                <div class="item"><span class="label">ผู้รับผิดชอบ</span><span class="value">${esc(staffList)}</span></div>
+                <div class="item"><span class="label">สถานะ</span><span class="value">${esc(elderly['สถานะ']) || '-'}</span></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">👪 ผู้ติดต่อในครอบครัว</div>
+                <div class="care-plan-grid" style="grid-template-columns:1fr;">${familyHtml}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📋 ประวัติการให้บริการ (${visits.length} ครั้ง)</div>
+                ${visitsHtml}
+            </div>
+
+            <div class="section">
+                <div class="section-title">💬 ความพึงพอใจ ${avgScore ? `<span class="chip">เฉลี่ย ${avgScore} / 5 ★ (${surveys.length} ครั้ง)</span>` : ''}</div>
+                ${surveysHtml}
+            </div>
+
+            <div class="empty-note" style="text-align:right;padding-top:1rem;border-top:1px dashed var(--border);">
+                พิมพ์รายงานเมื่อ ${new Date().toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' })}
+            </div>
+        `;
+
+        document.getElementById('reportSheet').style.display = 'block';
+    }
+
+    const idParam = new URLSearchParams(window.location.search).get('id');
+    if (idParam) {
+        loadReport(idParam);
+    } else {
+        loadElderlySelect();
+    }
+</script>
+
+</body>
+</html>
