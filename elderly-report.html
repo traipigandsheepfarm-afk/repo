@@ -178,6 +178,15 @@
     .survey-item .stars { color: var(--star); font-size: 1.1rem; }
     .survey-item .survey-meta { font-size: 0.82rem; color: var(--text-secondary); }
     .survey-item .survey-comment { font-size: 0.85rem; margin-top: 0.3rem; width: 100%; color: var(--text-primary); }
+    .survey-sub-scores {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 1rem;
+        margin-top: 0.35rem;
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+    }
+    .survey-sub-scores span { white-space: nowrap; }
 
     .empty-note { color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 1.5rem; }
 
@@ -328,14 +337,25 @@
             : `<div class="empty-note">ยังไม่มีประวัติการให้บริการ</div>`;
 
         const surveysHtml = surveys.length
-            ? surveys.slice().reverse().map(s => `
+            ? surveys.slice().reverse().map(s => {
+                const subScores = [];
+                if (s.courtesy) subScores.push(`มารยาท/ทัศนคติ ${starsHtml(s.courtesy)}`);
+                if (s.punctuality) subScores.push(`ตรงต่อเวลา ${starsHtml(s.punctuality)}`);
+                if (s.competency) subScores.push(`ความรู้ความสามารถ ${starsHtml(s.competency)}`);
+                if (s.attentiveness) subScores.push(`ความเอาใจใส่ ${starsHtml(s.attentiveness)}`);
+                const subScoresHtml = subScores.length
+                    ? `<div class="survey-sub-scores">${subScores.map(t => `<span>${t}</span>`).join('')}</div>`
+                    : '';
+                return `
                 <div class="survey-item">
                     <div>
                         <div class="stars">${starsHtml(s.score)}</div>
                         <div class="survey-meta">${formatThaiDate(s.visitDate)} — ผู้ให้บริการ: ${esc(s.staffName)}</div>
+                        ${subScoresHtml}
                         ${s.comment ? `<div class="survey-comment">"${esc(s.comment)}"</div>` : ''}
                     </div>
-                </div>`).join('')
+                </div>`;
+            }).join('')
             : `<div class="empty-note">ยังไม่มีแบบประเมินความพึงพอใจ</div>`;
 
         document.getElementById('reportBody').innerHTML = `
