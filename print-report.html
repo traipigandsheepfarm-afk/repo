@@ -3,32 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>รายงานการปฏิบัติงาน</title>
+<title>แบบบันทึกการปฏิบัติงานประจำวัน</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
-        --primary: #2563eb;
-        --primary-dark: #1e40af;
-        --primary-light: #dbeafe;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --border: #e2e8f0;
-        --background: #f8fafc;
+        --text: #111827;
+        --border: #000000;
+        --muted: #6b7280;
     }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
-        background: #eef1f5;
-        color: var(--text-primary);
-        padding: 2rem 1rem;
+        font-family: 'Sarabun', 'TH Sarabun New', sans-serif;
+        background: #e5e7eb;
+        color: var(--text);
+        padding: 1.5rem;
+        font-size: 16px;
     }
 
     .toolbar {
@@ -38,261 +29,138 @@
         justify-content: flex-end;
         gap: 0.75rem;
     }
-
     .toolbar button {
-        padding: 0.7rem 1.5rem;
-        border-radius: 10px;
+        padding: 0.65rem 1.4rem;
+        border-radius: 8px;
         font-family: inherit;
         font-size: 0.95rem;
         font-weight: 600;
         cursor: pointer;
         border: none;
-        transition: all 0.2s ease;
     }
+    .btn-print { background: #2563eb; color: white; }
+    .btn-close { background: white; color: var(--text); border: 1px solid #cbd5e1; }
 
-    .btn-print {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
-    }
-
-    .btn-print:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(102, 126, 234, 0.5);
-    }
-
-    .btn-close {
-        background: white;
-        color: var(--text-primary);
-        border: 2px solid var(--border);
-    }
-
-    .btn-close:hover {
-        background: var(--background);
-    }
-
-    .sheet {
+    .doc-page {
         max-width: 850px;
         margin: 0 auto;
         background: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
-        overflow: hidden;
+        padding: 2rem 2.25rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.15);
     }
 
-    .report-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem 2.5rem;
+    .doc-title {
         text-align: center;
-    }
-
-    .report-header .kicker {
-        font-size: 0.85rem;
-        opacity: 0.85;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.35rem;
-    }
-
-    .report-header h1 {
-        font-size: 1.5rem;
         font-weight: 700;
-        margin-bottom: 0.4rem;
+        font-size: 1.15rem;
+        line-height: 1.5;
+        margin-bottom: 0.6rem;
     }
-
-    .report-header p {
-        font-size: 0.95rem;
-        opacity: 0.95;
-    }
-
-    .report-body {
-        padding: 2rem 2.5rem 2.5rem;
-    }
-
-    .meta-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.9rem 2rem;
-        background: var(--background);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.75rem;
-    }
-
-    .meta-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-    }
-
-    .meta-item .label {
-        font-size: 0.78rem;
-        color: var(--text-secondary);
-    }
-
-    .meta-item .value {
+    .doc-meta-line {
+        text-align: center;
         font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-primary);
+        margin-bottom: 0.15rem;
     }
 
-    .section {
-        margin-bottom: 1.75rem;
+    table.doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.1rem;
     }
-
-    .section-title {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--primary-dark);
-        margin-bottom: 0.85rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--primary-light);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section-title::before {
-        content: '';
-        width: 4px;
-        height: 18px;
-        background: linear-gradient(to bottom, #667eea, #764ba2);
-        border-radius: 2px;
-    }
-
-    .vital-row {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-
-    .vital-card {
-        background: var(--background);
+    table.doc-table th, table.doc-table td {
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 0.9rem 1rem;
+        padding: 0.6rem 0.75rem;
+        vertical-align: top;
+        font-size: 0.95rem;
+    }
+    table.doc-table th {
+        text-align: center;
+        font-weight: 700;
+        background: #f3f4f6;
+    }
+    .time-cell {
+        text-align: center;
+        font-weight: 600;
+        width: 110px;
+        white-space: nowrap;
+    }
+
+    .cat-title { font-weight: 700; margin-top: 0.6rem; margin-bottom: 0.3rem; }
+    .cat-title:first-child { margin-top: 0; }
+    .check-list { list-style: none; margin-bottom: 0.4rem; }
+    .check-list li { margin-bottom: 0.2rem; line-height: 1.45; }
+
+    .assessment-block { margin-top: 1rem; border-top: 1px dashed #9ca3af; padding-top: 0.6rem; }
+    .assessment-block .assess-title { font-weight: 700; margin-bottom: 0.3rem; }
+    .assessment-text { white-space: pre-wrap; line-height: 1.5; }
+
+    .empty-note { color: var(--muted); font-style: italic; }
+
+    .sign-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 2.25rem;
+        font-size: 0.95rem;
+        text-align: center;
+        line-height: 1.9;
+    }
+
+    .approval-block {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+    .approval-block .sign-line {
+        margin-top: 1.6rem;
         text-align: center;
     }
 
-    .vital-card .v-label {
-        font-size: 0.78rem;
-        color: var(--text-secondary);
-        margin-bottom: 0.25rem;
+    .photo-appendix {
+        margin-top: 2.5rem;
+        padding-top: 1rem;
+        border-top: 2px dashed #cbd5e1;
     }
-
-    .vital-card .v-value {
-        font-size: 1.2rem;
+    .photo-appendix .appendix-title {
         font-weight: 700;
-        color: var(--primary-dark);
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+        font-size: 0.92rem;
     }
-
-    .activity-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .activity-tag {
-        background: var(--primary-light);
-        color: var(--primary-dark);
-        padding: 0.4rem 0.85rem;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .assessment-box {
-        background: var(--background);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
-        font-size: 0.95rem;
-        line-height: 1.7;
-        white-space: pre-wrap;
-        min-height: 3rem;
-    }
-
     .photo-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 0.75rem;
+        gap: 0.6rem;
     }
-
     .photo-grid img {
         width: 100%;
         aspect-ratio: 1;
         object-fit: cover;
-        border-radius: 10px;
-        border: 1px solid var(--border);
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
     }
 
-    .empty-note {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-        font-style: italic;
-    }
-
-    .signature-row {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-        margin-top: 2.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px dashed var(--border);
-    }
-
-    .signature-box {
-        text-align: center;
-    }
-
-    .signature-line {
-        border-bottom: 1px solid var(--text-secondary);
-        margin: 2.5rem 1.5rem 0.6rem;
-    }
-
-    .signature-box .sig-role {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-    }
-
-    .report-footer {
-        text-align: center;
+    .print-footer-note {
+        text-align: right;
         font-size: 0.78rem;
-        color: var(--text-secondary);
-        margin-top: 1.75rem;
+        color: var(--muted);
+        margin-top: 1.5rem;
     }
 
-    /* Print styles */
     @media print {
-        body {
-            background: white;
-            padding: 0;
-        }
-        .toolbar {
-            display: none;
-        }
-        .sheet {
-            box-shadow: none;
-            border-radius: 0;
-            max-width: 100%;
-        }
-        .report-header {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
+        body { background: white; padding: 0; font-size: 15px; }
+        .toolbar { display: none; }
+        .doc-page { box-shadow: none; max-width: 100%; padding: 0.5cm; }
+        table.doc-table, .sign-row, .approval-block { break-inside: avoid; }
     }
 
     @media (max-width: 640px) {
-        .meta-grid, .vital-row, .signature-row {
-            grid-template-columns: 1fr;
-        }
-        .photo-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .report-body {
-            padding: 1.5rem 1.25rem;
-        }
+        .doc-page { padding: 1.25rem; }
+        table.doc-table th, table.doc-table td { font-size: 0.85rem; padding: 0.45rem; }
+        .sign-row { grid-template-columns: 1fr; }
+        .photo-grid { grid-template-columns: repeat(2, 1fr); }
     }
 </style>
 </head>
@@ -303,19 +171,34 @@
     <button class="btn-print" onclick="window.print()">🖨️ พิมพ์ / บันทึกเป็น PDF</button>
 </div>
 
-<div class="sheet">
-    <div class="report-header">
-        <div class="kicker">รายงานการปฏิบัติงาน</div>
-        <h1>📋 แบบบันทึกการปฏิบัติงานประจำวัน</h1>
-        <p>ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</p>
-    </div>
-
-    <div class="report-body" id="reportBody">
-        <!-- Content is injected by JavaScript -->
-    </div>
+<div class="doc-page" id="docPage">
+    <div style="text-align:center; padding: 3rem 1rem; color:#6b7280;" id="loadingNote">กำลังโหลดข้อมูล...</div>
 </div>
 
 <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    const CATEGORY_ITEMS = {
+        1: ['วัดสัญญาณชีพ','การฟื้นฟูสภาพ','การทำกายภาพบำบัด','ดูแลด้านยา','ดูแลด้านโภชนาการ',
+            'นวดกระตุ้นระบบไหลเวียน','ฝึกบริหารสมอง','บริหารข้อและกล้ามเนื้อ','พลิกตะแคงตัว',
+            'จัดท่านอนที่เหมาะสม','ดูแลทำแผล','ดูแลสายสวนปัสสาวะ','การให้ออกซิเจน','ปฐมพยาบาล',
+            'ดูแลการดูดเสมหะ','การช่วยฟื้นคืนชีพ','ดูแลสุขภาพช่องปาก','ประเมิน 2Q','ประเมิน 9Q','ประเมิน 8Q'],
+        2: ['ดูแลความสะอาดด้านร่างกาย','ดูแลด้านการกินยา','ดูแลเรื่องการกินอาหาร'],
+        3: ['จัดบ้าน/ที่อยู่อาศัยให้เป็นระเบียบ','ทำความสะอาดบ้าน/ที่อยู่อาศัย','จัดสภาพแวดล้อมบ้าน/ที่อยู่อาศัย'],
+        4: ['ประเมิน ADL','ประเมินภาวะสมองเสื่อม','นวดท้อง','ให้คำแนะนำเรื่องอาหารที่เหมาะสม',
+            'ทาโลชั่นน้ำมันมะกอก','ประเมินความก้าวหน้า','ประเมินภาวะโภชนาการ','ประเมินความถูกต้องการใช้ยา',
+            'แนะนำอาหารกระตุ้นการขับถ่าย','ประเมินภาวะเครียด ST5','ประเมิน TAI I1-i3 C2-C4 B3-B5',
+            'ฝึกการกลั้นปัสสาวะ','ประเมินภาวะสมองเสื่อม AMT','ประเมินแผลกดทับ','การจัดท่านอนป้องกันปลายเท้าตก',
+            'การเคลื่อนย้ายบนเตียงลงจากเตียง','กระตุ้นไปวัด']
+    };
+    const CATEGORY_TITLES = {
+        1: '1. การบริการสาธารณสุขเบื้องต้น',
+        2: '2. การดูแลสุขภาพขั้นพื้นฐาน',
+        3: '3. การจัดการสภาพแวดล้อม/บ้าน/ที่อยู่อาศัย',
+        4: '4. การดูแลด้านอื่นๆ'
+    };
+    const MONTHS_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
     function esc(str) {
         if (str === undefined || str === null) return '';
         const div = document.createElement('div');
@@ -323,32 +206,52 @@
         return div.innerHTML;
     }
 
-    function formatThaiDate(dateStr) {
-        if (!dateStr) return '-';
-        try {
-            const d = new Date(dateStr);
-            if (isNaN(d.getTime())) return dateStr;
-            const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-            const buddhistYear = d.getFullYear() + 543;
-            return `${d.getDate()} ${months[d.getMonth()]} ${buddhistYear}`;
-        } catch (e) {
-            return dateStr;
-        }
+    function roleLabel(role) {
+        return role === 'CG' ? 'Caregiver' : 'สหวิชาชีพ';
     }
 
-    function render() {
+    function thaiDateParts(dateStr) {
+        if (!dateStr) return { day: '.....', month: '.....', year: '.....' };
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return { day: '.....', month: '.....', year: '.....' };
+        return { day: d.getDate(), month: MONTHS_TH[d.getMonth()], year: d.getFullYear() + 543 };
+    }
+
+    function buildCategoryHtml(catNum, activities, vitals) {
+        const items = CATEGORY_ITEMS[catNum].filter(item => activities.indexOf(item) !== -1);
+        if (items.length === 0) return '';
+        let html = `<div class="cat-title">${CATEGORY_TITLES[catNum]}</div><ul class="check-list">`;
+        items.forEach(item => {
+            if (catNum === 1 && item === 'วัดสัญญาณชีพ') {
+                const parts = [];
+                if (vitals.bp) parts.push(`ความดันโลหิต ${esc(vitals.bp)} mmHg`);
+                if (vitals.pulse) parts.push(`ชีพจร ${esc(vitals.pulse)} ครั้ง/นาที`);
+                if (vitals.sugar) parts.push(`น้ำตาลในเลือด ${esc(vitals.sugar)} mg/dl`);
+                html += `<li>☑ สัญญาณชีพ${parts.length ? ' ' + parts.join('  ') : ''}</li>`;
+            } else {
+                html += `<li>☑ ${esc(item)}</li>`;
+            }
+        });
+        html += `</ul>`;
+        return html;
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    async function render() {
         const raw = localStorage.getItem('reportData');
-        const body = document.getElementById('reportBody');
+        const docPage = document.getElementById('docPage');
 
         if (!raw) {
-            body.innerHTML = `
-                <div style="text-align:center; padding: 3rem 1rem;">
-                    <div style="font-size:2.5rem; margin-bottom: 1rem;">📭</div>
-                    <p style="color: var(--text-secondary); font-size: 1rem;">
-                        ไม่พบข้อมูลรายงาน กรุณากลับไปกรอกแบบฟอร์มและกด
-                        "ดูตัวอย่างรายงาน" อีกครั้ง
-                    </p>
-                </div>`;
+            docPage.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:#6b7280;">
+                ไม่พบข้อมูลรายงาน กรุณากลับไปกรอกแบบฟอร์มและกด "ดูตัวอย่างรายงาน" อีกครั้ง</div>`;
             return;
         }
 
@@ -356,99 +259,101 @@
         try {
             data = JSON.parse(raw);
         } catch (e) {
-            body.innerHTML = `<p class="empty-note">ไม่สามารถอ่านข้อมูลรายงานได้</p>`;
+            docPage.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:#6b7280;">ไม่สามารถอ่านข้อมูลรายงานได้</div>`;
             return;
         }
 
-        const activities = (data.activities || '')
-            .split(',')
-            .map(a => a.trim())
-            .filter(Boolean);
+        // role อาจมาจาก reportData หรือ sessionStorage (กรณีเปิดแท็บใหม่จากแท็บเดียวกัน)
+        const role = data.role || sessionStorage.getItem('userRole') || 'สหวิชาชีพ';
+        const rLabel = roleLabel(role);
 
-        const activityTags = activities.length
-            ? activities.map(a => `<span class="activity-tag">${esc(a)}</span>`).join('')
-            : `<span class="empty-note">ไม่ได้เลือกกิจกรรม</span>`;
+        const activities = (data.activities || '').split(',').map(a => a.trim()).filter(Boolean);
+        const vitals = { bp: data.bloodPressure, pulse: data.pulse, sugar: data.bloodSugar };
 
-        const photos = (data.images || []);
+        const col2Html = [1, 2, 3].map(c => buildCategoryHtml(c, activities, vitals)).join('') ||
+            `<span class="empty-note">ไม่มีข้อมูลกิจกรรม</span>`;
+        const col4Html = buildCategoryHtml(4, activities, vitals);
+
+        const assessmentHtml = `
+            <div class="assessment-block">
+                <div class="assess-title">5. ผลการประเมิน</div>
+                <div class="assessment-text">${data.assessment ? esc(data.assessment) : '<span class="empty-note">-</span>'}</div>
+            </div>`;
+
+        const dateParts = thaiDateParts(data.visitDate);
+        const monthOnly = (data.monthYear || '').split(' ')[0] || '';
+
+        const photos = data.images || [];
         const photoHtml = photos.length
-            ? `<div class="photo-grid">${photos.map(src => `<img src="${src}" alt="ภาพกิจกรรม">`).join('')}</div>`
-            : `<p class="empty-note">ไม่มีรูปภาพแนบ</p>`;
+            ? `<div class="photo-appendix">
+                 <div class="appendix-title">ภาพประกอบ (ภาคผนวก)</div>
+                 <div class="photo-grid">${photos.map(src => `<img src="${src}" alt="ภาพกิจกรรม">`).join('')}</div>
+               </div>`
+            : '';
 
-        body.innerHTML = `
-            <div class="meta-grid">
-                <div class="meta-item">
-                    <span class="label">ประจำเดือน</span>
-                    <span class="value">${esc(data.monthYear) || '-'}</span>
+        // ดึงชื่อ CM ปัจจุบันมาแสดงในช่องผู้รับรอง
+        let cmName = '.....................................................';
+        try {
+            const cmRes = await apiGet('getStaffList', { role: 'CM' });
+            if (cmRes.success && cmRes.data.length > 0) cmName = cmRes.data[0].name;
+        } catch (e) { /* ใช้ค่าเริ่มต้นถ้าดึงไม่สำเร็จ */ }
+
+        docPage.innerHTML = `
+            <div class="doc-title">
+                แบบบันทึกการปฏิบัติงานประจำวันของผู้ดูแลผู้สูงอายุ(${esc(rLabel)})<br>
+                ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง
+            </div>
+            <div class="doc-meta-line">
+                ประจำเดือน${esc(monthOnly)}&nbsp;&nbsp;&nbsp;&nbsp;
+                ชื่อ-สกุล (${esc(rLabel)}) ${esc(data.caregiverName)}&nbsp;&nbsp;&nbsp;&nbsp;
+                ชื่อ-สกุล ผู้สูงอายุ ${esc(data.elderlyName)}
+            </div>
+            <div class="doc-meta-line">วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}</div>
+
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th>ว/ด/ป<br>เวลา</th>
+                        <th>กิจกรรมดูแลช่วยเหลือ</th>
+                        <th>กิจกรรมดูแลช่วยเหลือ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="time-cell">${esc(data.visitDate)}<br>${esc(data.startTime)}-${esc(data.endTime)} น.</td>
+                        <td>${col2Html}</td>
+                        <td>${col4Html || '<span class="empty-note">ไม่มีข้อมูล</span>'}${assessmentHtml}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="sign-row">
+                <div>
+                    ลงชื่อ..................................................${esc(rLabel)}<br>
+                    (${esc(data.caregiverName)})<br>
+                    วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}
                 </div>
-                <div class="meta-item">
-                    <span class="label">วันที่เยี่ยม</span>
-                    <span class="value">${formatThaiDate(data.visitDate)}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="label">ชื่อ-สกุล (สหวิชาชีพ)</span>
-                    <span class="value">${esc(data.caregiverName) || '-'}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="label">ชื่อ-สกุล ผู้สูงอายุ</span>
-                    <span class="value">${esc(data.elderlyName) || '-'}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="label">เวลาเริ่ม</span>
-                    <span class="value">${esc(data.startTime) || '-'}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="label">เวลาสิ้นสุด</span>
-                    <span class="value">${esc(data.endTime) || '-'}</span>
+                <div>
+                    ขอรับรองว่าได้ปฏิบัติงานตามรายงานข้างต้นจริง<br>
+                    ลงชื่อ..................................................ผู้ดูแลผู้สูงอายุ<br>
+                    (.................................................)<br>
+                    วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">สัญญาณชีพ</div>
-                <div class="vital-row">
-                    <div class="vital-card">
-                        <div class="v-label">ความดันโลหิต (mmHg)</div>
-                        <div class="v-value">${esc(data.bloodPressure) || '-'}</div>
-                    </div>
-                    <div class="vital-card">
-                        <div class="v-label">ชีพจร (ครั้ง/นาที)</div>
-                        <div class="v-value">${esc(data.pulse) || '-'}</div>
-                    </div>
-                    <div class="vital-card">
-                        <div class="v-label">น้ำตาลในเลือด (mg/dl)</div>
-                        <div class="v-value">${esc(data.bloodSugar) || '-'}</div>
-                    </div>
+            <div class="approval-block">
+                เรียน ประธานคณะกรรมการศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง<br>
+                &nbsp;&nbsp;- เพื่อโปรดทราบ/พิจารณา<br>
+                &nbsp;&nbsp;- ได้ตรวจสอบแล้ว รับรองว่าถูกต้อง หรือเห็นสมควรประการใด โปรดพิจารณาสั่งการ
+                <div class="sign-line">
+                    ลงชื่อ..................................................ผู้รับรอง/(Care manager)<br>
+                    (${esc(cmName)})
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">กิจกรรมที่ปฏิบัติ</div>
-                <div class="activity-tags">${activityTags}</div>
-            </div>
+            ${photoHtml}
 
-            <div class="section">
-                <div class="section-title">ผลการประเมินและหมายเหตุ</div>
-                <div class="assessment-box">${data.assessment ? esc(data.assessment) : '<span class="empty-note">ไม่มีบันทึกเพิ่มเติม</span>'}</div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">ภาพถ่ายกิจกรรม</div>
-                ${photoHtml}
-            </div>
-
-            <div class="signature-row">
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <div class="sig-role">ผู้บันทึก (สหวิชาชีพ)</div>
-                </div>
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <div class="sig-role">ผู้ตรวจสอบ</div>
-                </div>
-            </div>
-
-            <div class="report-footer">
-                พิมพ์รายงานเมื่อ ${new Date().toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' })}
-            </div>
+            <div class="print-footer-note">พิมพ์เอกสารเมื่อ ${new Date().toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' })}</div>
         `;
     }
 
