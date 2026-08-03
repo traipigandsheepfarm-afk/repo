@@ -133,16 +133,11 @@
         line-height: 1.6;
     }
     .cm-sign-row {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto;
         align-items: center;
-        justify-content: space-between;
         gap: 1.5rem;
         margin-top: 1.2rem;
-    }
-    .sig-block-left {
-        width: fit-content;
-        margin: 0;
-        text-align: center;
     }
     .cm-sign-photo {
         width: 180px;
@@ -373,7 +368,7 @@
                 &nbsp;&nbsp;- เพื่อโปรดทราบ/พิจารณา<br>
                 &nbsp;&nbsp;- ได้ตรวจสอบแล้ว รับรองว่าถูกต้อง หรือเห็นสมควรประการใด โปรดพิจารณาสั่งการ
                 <div class="cm-sign-row">
-                    <div class="sig-block-left">
+                    <div class="sig-block">
                         ${signBlockHtml('ลงชื่อ', 'ผู้รับรอง/(Care manager)', `(${esc(cmName)})`, null, 32)}
                     </div>
                     ${firstPhotoHtml}
