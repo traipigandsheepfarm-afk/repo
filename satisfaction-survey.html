@@ -6,7 +6,7 @@
 <title>แบบประเมินความพึงพอใจ - ระบบดูแลผู้สูงอายุ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
         --primary: #2563eb;
@@ -54,11 +54,23 @@
         color: var(--primary-dark);
         border-radius: 12px;
         padding: 0.9rem 1.1rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
         font-size: 0.95rem;
         text-align: center;
     }
     .elderly-banner strong { font-size: 1.05rem; }
+
+    .monthly-banner {
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: 12px;
+        padding: 0.8rem 1.1rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.86rem;
+        text-align: center;
+        display: none;
+    }
+    .monthly-banner.visible { display: block; }
 
     .form-group { margin-bottom: 1.4rem; display: flex; flex-direction: column; gap: 0.5rem; }
     label { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
@@ -75,14 +87,23 @@
     }
     textarea { min-height: 100px; resize: vertical; }
 
+    .rating-group { margin-bottom: 1.1rem; }
+    .rating-group.overall-group {
+        margin-bottom: 1.4rem;
+        padding-bottom: 1.1rem;
+        border-bottom: 1px dashed var(--border);
+    }
+    .rating-group label { display: block; text-align: center; margin-bottom: 0.3rem; }
+
     .star-rating {
         display: flex;
         justify-content: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0 0.25rem;
+        gap: 0.4rem;
+        padding: 0.35rem 0 0.15rem;
     }
+    .overall-group .star-rating .star { font-size: 2.6rem; }
+    .sub-group .star-rating .star { font-size: 1.8rem; }
     .star {
-        font-size: 2.75rem;
         color: #e2e8f0;
         cursor: pointer;
         transition: all 0.15s ease;
@@ -91,9 +112,9 @@
     .star.filled { color: var(--star); transform: scale(1.05); }
     .star-label {
         text-align: center;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: var(--text-secondary);
-        min-height: 1.3rem;
+        min-height: 1.2rem;
         font-weight: 600;
     }
 
@@ -125,7 +146,6 @@
         gap: 0.6rem;
     }
     .alert-error { background: #fee2e2; color: #991b1b; border: 2px solid var(--error); }
-    .alert-success { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
 
     .success-view { text-align: center; padding: 1rem 0; display: none; }
     .success-view .icon { font-size: 3.5rem; margin-bottom: 1rem; }
@@ -154,6 +174,10 @@
                 <strong id="elderlyNameLabel">-</strong>
             </div>
 
+            <div class="monthly-banner" id="monthlyBanner">
+                📋 นี่คือแบบประเมินฉบับเต็มประจำเดือนนี้ มีคำถามเพิ่มเติมเล็กน้อยเพื่อช่วยพัฒนาการให้บริการ
+            </div>
+
             <div id="alertBox" class="alert alert-error"></div>
 
             <form id="surveyForm">
@@ -169,16 +193,55 @@
                     <input type="date" id="visitDate" required>
                 </div>
 
-                <div class="form-group">
-                    <label style="text-align:center;">ระดับความพึงพอใจโดยรวม</label>
-                    <div class="star-rating" id="starRating">
+                <div class="rating-group overall-group">
+                    <label>ระดับความพึงพอใจโดยรวม</label>
+                    <div class="star-rating" data-group="overall">
                         <span class="star" data-value="1">★</span>
                         <span class="star" data-value="2">★</span>
                         <span class="star" data-value="3">★</span>
                         <span class="star" data-value="4">★</span>
                         <span class="star" data-value="5">★</span>
                     </div>
-                    <div class="star-label" id="starLabel"></div>
+                    <div class="star-label" data-group="overall"></div>
+                </div>
+
+                <div id="subRatingsWrap" style="display:none;">
+                    <div class="rating-group sub-group">
+                        <label>มารยาทและทัศนคติของผู้ให้บริการ</label>
+                        <div class="star-rating" data-group="courtesy">
+                            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span><span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <div class="star-label" data-group="courtesy"></div>
+                    </div>
+                    <div class="rating-group sub-group">
+                        <label>ความตรงต่อเวลา</label>
+                        <div class="star-rating" data-group="punctuality">
+                            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span><span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <div class="star-label" data-group="punctuality"></div>
+                    </div>
+                    <div class="rating-group sub-group">
+                        <label>ความรู้ความสามารถในการดูแล</label>
+                        <div class="star-rating" data-group="competency">
+                            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span><span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <div class="star-label" data-group="competency"></div>
+                    </div>
+                    <div class="rating-group sub-group">
+                        <label>ความเอาใจใส่เป็นรายบุคคล</label>
+                        <div class="star-rating" data-group="attentiveness">
+                            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span><span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <div class="star-label" data-group="attentiveness"></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -226,6 +289,20 @@
 
     const elderlyId = new URLSearchParams(window.location.search).get('id');
     let elderlyName = '';
+    let isDetailedRequired = false;
+
+    // เช็คว่าภายในเดือนปฏิทินนี้ มีการทำแบบละเอียด (มีคะแนนหมวดย่อย) ของผู้สูงอายุคนนี้แล้วหรือยัง
+    function hasDetailedSurveyThisMonth(surveys) {
+        const now = new Date();
+        const thisMonth = now.getMonth();
+        const thisYear = now.getFullYear();
+        return surveys.some(s => {
+            if (!s.courtesy) return false; // ไม่ใช่แบบละเอียด
+            const d = new Date(s.surveyDate);
+            if (isNaN(d.getTime())) return false;
+            return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+        });
+    }
 
     async function init() {
         if (!elderlyId) {
@@ -234,41 +311,60 @@
             return;
         }
 
-        const detail = await apiGet('getElderlyDetail', { id: elderlyId });
+        const [detailRes, surveyRes] = await Promise.all([
+            apiGet('getElderlyDetail', { id: elderlyId }),
+            apiGet('getSurveys', { elderlyId: elderlyId })
+        ]);
         document.getElementById('loadingState').style.display = 'none';
 
-        if (!detail.success) {
+        if (!detailRes.success) {
             document.getElementById('noIdView').style.display = 'block';
             return;
         }
 
-        elderlyName = detail.data.elderly['ชื่อ-สกุล'];
+        elderlyName = detailRes.data.elderly['ชื่อ-สกุล'];
         document.getElementById('elderlyNameLabel').textContent = elderlyName;
 
-        const staffOptions = detail.data.assignments.map(a =>
+        const staffOptions = detailRes.data.assignments.map(a =>
             `<option value="${esc(a.staffName)}">${esc(a.staffName)} (${esc(a.type)})</option>`
         ).join('');
         document.getElementById('staffSelect').innerHTML =
             '<option value="">-- เลือกผู้ให้บริการ --</option>' + staffOptions;
 
         document.getElementById('visitDate').value = new Date().toISOString().split('T')[0];
+
+        // กำหนดว่าจะแสดงแบบละเอียด (รายเดือน) หรือแบบสั้น
+        const surveys = surveyRes.success ? surveyRes.data : [];
+        isDetailedRequired = !hasDetailedSurveyThisMonth(surveys);
+        if (isDetailedRequired) {
+            document.getElementById('subRatingsWrap').style.display = 'block';
+            document.getElementById('monthlyBanner').classList.add('visible');
+        }
+
         document.getElementById('mainForm').style.display = 'block';
     }
 
-    // ===== Star rating =====
-    let selectedScore = 0;
+    // ===== Star rating (รองรับหลายกลุ่ม) =====
+    const scores = { overall: 0, courtesy: 0, punctuality: 0, competency: 0, attentiveness: 0 };
     const starLabels = { 1: 'น้อยที่สุด', 2: 'น้อย', 3: 'ปานกลาง', 4: 'มาก', 5: 'มากที่สุด' };
-    document.querySelectorAll('.star').forEach(star => {
-        star.addEventListener('click', () => {
-            selectedScore = parseInt(star.dataset.value);
-            updateStars();
+
+    document.querySelectorAll('.star-rating').forEach(group => {
+        const groupName = group.dataset.group;
+        group.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                scores[groupName] = parseInt(star.dataset.value);
+                updateStars(groupName);
+            });
         });
     });
-    function updateStars() {
-        document.querySelectorAll('.star').forEach(s => {
-            s.classList.toggle('filled', parseInt(s.dataset.value) <= selectedScore);
+
+    function updateStars(groupName) {
+        const group = document.querySelector(`.star-rating[data-group="${groupName}"]`);
+        group.querySelectorAll('.star').forEach(s => {
+            s.classList.toggle('filled', parseInt(s.dataset.value) <= scores[groupName]);
         });
-        document.getElementById('starLabel').textContent = selectedScore ? starLabels[selectedScore] : '';
+        const labelEl = document.querySelector(`.star-label[data-group="${groupName}"]`);
+        labelEl.textContent = scores[groupName] ? starLabels[scores[groupName]] : '';
     }
 
     function showError(msg) {
@@ -290,7 +386,13 @@
 
         if (!staffName) { showError('กรุณาเลือกผู้ให้บริการ'); return; }
         if (!visitDate) { showError('กรุณาเลือกวันที่รับบริการ'); return; }
-        if (!selectedScore) { showError('กรุณาให้คะแนนความพึงพอใจ'); return; }
+        if (!scores.overall) { showError('กรุณาให้คะแนนความพึงพอใจโดยรวม'); return; }
+        if (isDetailedRequired) {
+            if (!scores.courtesy || !scores.punctuality || !scores.competency || !scores.attentiveness) {
+                showError('กรุณาให้คะแนนครบทุกหัวข้อ (แบบประเมินฉบับเต็มประจำเดือน)');
+                return;
+            }
+        }
 
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
@@ -301,8 +403,12 @@
             elderlyName: elderlyName,
             visitDate: visitDate,
             staffName: staffName,
-            score: selectedScore,
-            comment: comment
+            score: scores.overall,
+            comment: comment,
+            courtesy: isDetailedRequired ? scores.courtesy : '',
+            punctuality: isDetailedRequired ? scores.punctuality : '',
+            competency: isDetailedRequired ? scores.competency : '',
+            attentiveness: isDetailedRequired ? scores.attentiveness : ''
         };
 
         try {
