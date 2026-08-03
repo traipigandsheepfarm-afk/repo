@@ -99,16 +99,31 @@
     .sign-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
         margin-top: 1.5rem;
-        font-size: 0.92rem;
-        line-height: 1.75;
+        font-size: 0.9rem;
+        line-height: 1.7;
     }
     .sig-block {
-        max-width: 280px;
+        width: fit-content;
+        max-width: 100%;
         margin: 0 auto;
         text-align: center;
     }
+    .sig-line-grid {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        align-items: end;
+        column-gap: 0.3rem;
+        white-space: nowrap;
+    }
+    .sig-line-grid .dots { letter-spacing: 0.1em; }
+    .sig-name-row {
+        grid-column: 2;
+        text-align: center;
+        margin-top: 0.1rem;
+    }
+    .sig-date-row { text-align: center; margin-top: 0.1rem; }
 
     .approval-block {
         margin-top: 1.3rem;
@@ -228,6 +243,16 @@
         return html;
     }
 
+    function signBlockHtml(prefix, suffix, nameLine, dateLine) {
+        return `
+            <div class="sig-line-grid">
+                <span>${prefix}</span><span class="dots">....................</span><span>${suffix}</span>
+            </div>
+            <div class="sig-name-row">${nameLine}</div>
+            ${dateLine ? `<div class="sig-date-row">${dateLine}</div>` : ''}
+        `;
+    }
+
     async function apiGet(action, params) {
         params = params || {};
         const url = new URL(WEB_APP_URL);
@@ -329,15 +354,11 @@
 
             <div class="sign-row">
                 <div class="sig-block">
-                    ลงชื่อ..................................................${esc(rLabel)}<br>
-                    (${esc(data.caregiverName)})<br>
-                    วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}
+                    ${signBlockHtml('ลงชื่อ', esc(rLabel), `(${esc(data.caregiverName)})`, `วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}`)}
                 </div>
                 <div class="sig-block">
-                    ขอรับรองว่าได้ปฏิบัติงานตามรายงานข้างต้นจริง<br>
-                    ลงชื่อ ผู้ดูแลผู้สูงอายุ<br>
-                    (${familySignName})<br>
-                    วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}
+                    <div style="margin-bottom:0.3rem;">ขอรับรองว่าได้ปฏิบัติงานตามรายงานข้างต้นจริง</div>
+                    ${signBlockHtml('ลงชื่อ', 'ผู้ดูแลผู้สูงอายุ', `(${familySignName})`, `วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}`)}
                 </div>
             </div>
 
@@ -347,8 +368,7 @@
                 &nbsp;&nbsp;- ได้ตรวจสอบแล้ว รับรองว่าถูกต้อง หรือเห็นสมควรประการใด โปรดพิจารณาสั่งการ
                 <div class="cm-sign-row">
                     <div class="sig-block">
-                        ลงชื่อ..................................................ผู้รับรอง/(Care manager)<br>
-                        (${esc(cmName)})
+                        ${signBlockHtml('ลงชื่อ', 'ผู้รับรอง/(Care manager)', `(${esc(cmName)})`)}
                     </div>
                     ${firstPhotoHtml}
                 </div>
