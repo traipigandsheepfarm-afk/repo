@@ -45,33 +45,33 @@
         max-width: 850px;
         margin: 0 auto;
         background: white;
-        padding: 2rem 2.25rem;
+        padding: 1.6rem 2.1rem;
         box-shadow: 0 4px 18px rgba(0,0,0,0.15);
     }
 
     .doc-title {
         text-align: center;
         font-weight: 700;
-        font-size: 1.15rem;
-        line-height: 1.5;
-        margin-bottom: 0.6rem;
+        font-size: 1.1rem;
+        line-height: 1.45;
+        margin-bottom: 0.5rem;
     }
     .doc-meta-line {
         text-align: center;
-        font-size: 1rem;
-        margin-bottom: 0.15rem;
+        font-size: 0.98rem;
+        margin-bottom: 0.1rem;
     }
 
     table.doc-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 1.1rem;
+        margin-top: 0.9rem;
     }
     table.doc-table th, table.doc-table td {
         border: 1px solid var(--border);
-        padding: 0.6rem 0.75rem;
+        padding: 0.5rem 0.7rem;
         vertical-align: top;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
     }
     table.doc-table th {
         text-align: center;
@@ -81,18 +81,18 @@
     .time-cell {
         text-align: center;
         font-weight: 600;
-        width: 110px;
+        width: 105px;
         white-space: nowrap;
     }
 
-    .cat-title { font-weight: 700; margin-top: 0.6rem; margin-bottom: 0.3rem; }
+    .cat-title { font-weight: 700; margin-top: 0.5rem; margin-bottom: 0.25rem; }
     .cat-title:first-child { margin-top: 0; }
-    .check-list { list-style: none; margin-bottom: 0.4rem; }
-    .check-list li { margin-bottom: 0.2rem; line-height: 1.45; }
+    .check-list { list-style: none; margin-bottom: 0.3rem; }
+    .check-list li { margin-bottom: 0.15rem; line-height: 1.4; }
 
-    .assessment-block { margin-top: 1rem; border-top: 1px dashed #9ca3af; padding-top: 0.6rem; }
-    .assessment-block .assess-title { font-weight: 700; margin-bottom: 0.3rem; }
-    .assessment-text { white-space: pre-wrap; line-height: 1.5; }
+    .assessment-block { margin-top: 0.8rem; border-top: 1px dashed #9ca3af; padding-top: 0.5rem; }
+    .assessment-block .assess-title { font-weight: 700; margin-bottom: 0.25rem; }
+    .assessment-text { white-space: pre-wrap; line-height: 1.45; }
 
     .empty-note { color: var(--muted); font-style: italic; }
 
@@ -100,67 +100,59 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
-        margin-top: 2.25rem;
-        font-size: 0.95rem;
+        margin-top: 1.5rem;
+        font-size: 0.92rem;
+        line-height: 1.75;
+    }
+    .sig-block {
+        max-width: 280px;
+        margin: 0 auto;
         text-align: center;
-        line-height: 1.9;
     }
 
     .approval-block {
-        margin-top: 2rem;
-        padding-top: 1rem;
+        margin-top: 1.3rem;
+        padding-top: 0.75rem;
         border-top: 1px solid var(--border);
-        font-size: 0.95rem;
-        line-height: 1.8;
-    }
-    .approval-block .sign-line {
-        margin-top: 1.6rem;
-        text-align: center;
-    }
-
-    .photo-appendix {
-        margin-top: 2.5rem;
-        padding-top: 1rem;
-        border-top: 2px dashed #cbd5e1;
-    }
-    .photo-appendix .appendix-title {
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 0.75rem;
         font-size: 0.92rem;
+        line-height: 1.6;
     }
-    .photo-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.6rem;
+    .cm-sign-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 1.2rem;
     }
-    .photo-grid img {
-        width: 100%;
-        aspect-ratio: 1;
+    .cm-sign-photo {
+        width: 90px;
+        height: 90px;
         object-fit: cover;
         border: 1px solid #d1d5db;
         border-radius: 6px;
+        flex-shrink: 0;
     }
 
     .print-footer-note {
         text-align: right;
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         color: var(--muted);
-        margin-top: 1.5rem;
+        margin-top: 1rem;
     }
 
     @media print {
-        body { background: white; padding: 0; font-size: 15px; }
+        body { background: white; padding: 0; font-size: 14px; }
         .toolbar { display: none; }
-        .doc-page { box-shadow: none; max-width: 100%; padding: 0.5cm; }
+        .doc-page { box-shadow: none; max-width: 100%; padding: 0.4cm 0.6cm; }
         table.doc-table, .sign-row, .approval-block { break-inside: avoid; }
+        @page { size: A4; margin: 1cm; }
     }
 
     @media (max-width: 640px) {
         .doc-page { padding: 1.25rem; }
         table.doc-table th, table.doc-table td { font-size: 0.85rem; padding: 0.45rem; }
         .sign-row { grid-template-columns: 1fr; }
-        .photo-grid { grid-template-columns: repeat(2, 1fr); }
+        .cm-sign-row { flex-direction: column; }
     }
 </style>
 </head>
@@ -284,11 +276,8 @@
         const monthOnly = (data.monthYear || '').split(' ')[0] || '';
 
         const photos = data.images || [];
-        const photoHtml = photos.length
-            ? `<div class="photo-appendix">
-                 <div class="appendix-title">ภาพประกอบ (ภาคผนวก)</div>
-                 <div class="photo-grid">${photos.map(src => `<img src="${src}" alt="ภาพกิจกรรม">`).join('')}</div>
-               </div>`
+        const firstPhotoHtml = photos.length
+            ? `<img class="cm-sign-photo" src="${photos[0]}" alt="ภาพประกอบการให้บริการ">`
             : '';
 
         // ดึงชื่อ CM ปัจจุบันมาแสดงในช่องผู้รับรอง
@@ -297,6 +286,16 @@
             const cmRes = await apiGet('getStaffList', { role: 'CM' });
             if (cmRes.success && cmRes.data.length > 0) cmName = cmRes.data[0].name;
         } catch (e) { /* ใช้ค่าเริ่มต้นถ้าดึงไม่สำเร็จ */ }
+
+        // ดึงชื่อผู้ดูแลในครอบครัว มาใส่แทนจุดไข่ปลาในช่องลงชื่อผู้ดูแลผู้สูงอายุ
+        let familyName = null;
+        if (data.elderlyId) {
+            try {
+                const famRes = await apiGet('getFamily', { elderlyId: data.elderlyId });
+                if (famRes.success && famRes.data.length > 0) familyName = famRes.data[0].name;
+            } catch (e) { /* ใช้จุดไข่ปลาถ้าดึงไม่สำเร็จ */ }
+        }
+        const familySignName = familyName ? esc(familyName) : '.................................................';
 
         docPage.innerHTML = `
             <div class="doc-title">
@@ -328,15 +327,15 @@
             </table>
 
             <div class="sign-row">
-                <div>
+                <div class="sig-block">
                     ลงชื่อ..................................................${esc(rLabel)}<br>
                     (${esc(data.caregiverName)})<br>
                     วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}
                 </div>
-                <div>
+                <div class="sig-block">
                     ขอรับรองว่าได้ปฏิบัติงานตามรายงานข้างต้นจริง<br>
                     ลงชื่อ..................................................ผู้ดูแลผู้สูงอายุ<br>
-                    (.................................................)<br>
+                    (${familySignName})<br>
                     วันที่ ${dateParts.day} เดือน ${dateParts.month} พ.ศ. ${dateParts.year}
                 </div>
             </div>
@@ -345,13 +344,14 @@
                 เรียน ประธานคณะกรรมการศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง<br>
                 &nbsp;&nbsp;- เพื่อโปรดทราบ/พิจารณา<br>
                 &nbsp;&nbsp;- ได้ตรวจสอบแล้ว รับรองว่าถูกต้อง หรือเห็นสมควรประการใด โปรดพิจารณาสั่งการ
-                <div class="sign-line">
-                    ลงชื่อ..................................................ผู้รับรอง/(Care manager)<br>
-                    (${esc(cmName)})
+                <div class="cm-sign-row">
+                    <div class="sig-block">
+                        ลงชื่อ..................................................ผู้รับรอง/(Care manager)<br>
+                        (${esc(cmName)})
+                    </div>
+                    ${firstPhotoHtml}
                 </div>
             </div>
-
-            ${photoHtml}
 
             <div class="print-footer-note">พิมพ์เอกสารเมื่อ ${new Date().toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' })}</div>
         `;
