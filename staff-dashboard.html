@@ -134,12 +134,13 @@
 
     .card-actions {
         display: flex;
+        flex-wrap: wrap;
         gap: 0.5rem;
         padding: 1rem 1.25rem;
         background: var(--background);
     }
-    .card-actions a {
-        flex: 1;
+    .card-actions a, .card-actions button {
+        flex: 1 1 calc(50% - 0.25rem);
         text-align: center;
         padding: 0.65rem;
         border-radius: 10px;
@@ -147,11 +148,90 @@
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
     }
     .btn-log { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
     .btn-log:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
     .btn-report { background: var(--surface); color: var(--text-primary); border: 2px solid var(--border); }
     .btn-report:hover { background: white; border-color: var(--primary); }
+    .btn-survey {
+        flex: 1 1 100%;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 2px solid #a7f3d0;
+    }
+    .btn-survey:hover { background: #d1fae5; border-color: #6ee7b7; }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        z-index: 100;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal-box {
+        background: var(--surface);
+        border-radius: 20px;
+        max-width: 380px;
+        width: 100%;
+        padding: 1.75rem;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 { font-size: 1.05rem; margin-bottom: 0.25rem; }
+    .modal-box .modal-elderly-name { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.1rem; }
+    .modal-box img.qr-image {
+        width: 200px;
+        height: 200px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 1.1rem;
+    }
+    .modal-link-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .modal-link-row input {
+        flex: 1;
+        padding: 0.6rem 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-family: inherit;
+        color: var(--text-secondary);
+        background: var(--background);
+    }
+    .modal-link-row button {
+        padding: 0.6rem 1rem;
+        border: none;
+        border-radius: 10px;
+        background: var(--primary);
+        color: white;
+        font-weight: 600;
+        font-size: 0.82rem;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+    }
+    .modal-copy-note { font-size: 0.78rem; color: var(--success); min-height: 1.1rem; margin-bottom: 0.75rem; }
+    .modal-close-btn {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+        color: var(--text-primary);
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+    }
 
     .empty-state {
         text-align: center;
@@ -186,6 +266,20 @@
     </div>
     <div id="content">
         <div class="loading-state">กำลังโหลดข้อมูล...</div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="surveyModal">
+    <div class="modal-box">
+        <h3>💬 แบบประเมินความพึงพอใจ</h3>
+        <div class="modal-elderly-name" id="modalElderlyName">-</div>
+        <img class="qr-image" id="modalQrImage" src="" alt="QR code แบบประเมิน">
+        <div class="modal-link-row">
+            <input type="text" id="modalLinkInput" readonly>
+            <button onclick="copySurveyLink()">คัดลอก</button>
+        </div>
+        <div class="modal-copy-note" id="modalCopyNote"></div>
+        <button class="modal-close-btn" onclick="closeSurveyModal()">ปิด</button>
     </div>
 </div>
 
@@ -289,11 +383,50 @@
                 <div class="card-actions">
                     <a class="btn-log" href="elderly-care-log.html?elderlyId=${encodeURIComponent(id)}">📝 บันทึกการเยี่ยม</a>
                     <a class="btn-report" href="elderly-report.html?id=${encodeURIComponent(id)}">📄 ดูรายงาน</a>
+                    <button class="btn-survey" onclick="openSurveyModal('${id}', '${esc(name).replace(/'/g, "\\'")}')">💬 ส่งแบบประเมินให้ครอบครัว</button>
                 </div>
             </div>`;
         }).join('');
 
         content.innerHTML = `<div class="card-grid">${cardsHtml}</div>`;
+    }
+
+    function openSurveyModal(elderlyId, elderlyName) {
+        const relativeUrl = `satisfaction-survey.html?id=${encodeURIComponent(elderlyId)}`;
+        const fullUrl = new URL(relativeUrl, window.location.href).href;
+
+        document.getElementById('modalElderlyName').textContent = elderlyName;
+        document.getElementById('modalLinkInput').value = fullUrl;
+        document.getElementById('modalQrImage').src =
+            `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(fullUrl)}`;
+        document.getElementById('modalCopyNote').textContent = '';
+        document.getElementById('surveyModal').classList.add('visible');
+    }
+
+    function closeSurveyModal() {
+        document.getElementById('surveyModal').classList.remove('visible');
+    }
+
+    function copySurveyLink() {
+        const input = document.getElementById('modalLinkInput');
+        const note = document.getElementById('modalCopyNote');
+        const doFallback = () => {
+            input.select();
+            input.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                note.textContent = '✓ คัดลอกลิงก์แล้ว';
+            } catch (e) {
+                note.textContent = 'คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง';
+            }
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(input.value)
+                .then(() => { note.textContent = '✓ คัดลอกลิงก์แล้ว'; })
+                .catch(doFallback);
+        } else {
+            doFallback();
+        }
     }
 
     if (userName && userRole !== 'CM') {
