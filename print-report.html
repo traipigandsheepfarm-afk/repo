@@ -135,9 +135,14 @@
     .cm-sign-row {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         gap: 1.5rem;
         margin-top: 1.2rem;
+    }
+    .sig-block-left {
+        width: fit-content;
+        margin: 0;
+        text-align: center;
     }
     .cm-sign-photo {
         width: 180px;
@@ -243,10 +248,11 @@
         return html;
     }
 
-    function signBlockHtml(prefix, suffix, nameLine, dateLine) {
+    function signBlockHtml(prefix, suffix, nameLine, dateLine, dotsCount) {
+        const dots = '.'.repeat(dotsCount || 20);
         return `
             <div class="sig-line-grid">
-                <span>${prefix}</span><span class="dots">....................</span><span>${suffix}</span>
+                <span>${prefix}</span><span class="dots">${dots}</span><span>${suffix}</span>
             </div>
             <div class="sig-name-row">${nameLine}</div>
             ${dateLine ? `<div class="sig-date-row">${dateLine}</div>` : ''}
@@ -367,8 +373,8 @@
                 &nbsp;&nbsp;- เพื่อโปรดทราบ/พิจารณา<br>
                 &nbsp;&nbsp;- ได้ตรวจสอบแล้ว รับรองว่าถูกต้อง หรือเห็นสมควรประการใด โปรดพิจารณาสั่งการ
                 <div class="cm-sign-row">
-                    <div class="sig-block">
-                        ${signBlockHtml('ลงชื่อ', 'ผู้รับรอง/(Care manager)', `(${esc(cmName)})`)}
+                    <div class="sig-block-left">
+                        ${signBlockHtml('ลงชื่อ', 'ผู้รับรอง/(Care manager)', `(${esc(cmName)})`, null, 32)}
                     </div>
                     ${firstPhotoHtml}
                 </div>
