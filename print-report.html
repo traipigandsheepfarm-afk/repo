@@ -263,21 +263,47 @@
         return res.json();
     }
 
-    async function render() {
-        const raw = localStorage.getItem('reportData');
-        const docPage = document.getElementById('docPage');
+    // โหลดข้อมูลรายงาน — จาก URL ?seq=... (ดูย้อนหลัง) หรือจาก localStorage (เพิ่งกรอกฟอร์มเสร็จ)
+    async function loadDataSource() {
+        const seqParam = new URLSearchParams(window.location.search).get('seq');
 
-        if (!raw) {
-            docPage.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:#6b7280;">
-                ไม่พบข้อมูลรายงาน กรุณากลับไปกรอกแบบฟอร์มและกด "ดูตัวอย่างรายงาน" อีกครั้ง</div>`;
-            return;
+        if (seqParam) {
+            const res = await apiGet('getVisitBySeq', { seq: seqParam });
+            if (!res.success) return { error: res.message || 'ไม่พบข้อมูลการบันทึกนี้' };
+            const row = res.data;
+            return {
+                monthYear: row['ประจำเดือน'],
+                caregiverName: row['ชื่อ-สกุล (สหวิชาชีพ)'],
+                role: row.role,
+                elderlyId: row.elderlyId,
+                elderlyName: row['ชื่อ-สกุล ผู้สูงอายุ'],
+                visitDate: row['วันที่เยี่ยม'],
+                startTime: row['เวลาเริ่ม'],
+                endTime: row['เวลาสิ้นสุด'],
+                bloodPressure: row['ความดันโลหิต (mmHg)'],
+                pulse: row['ชีพจร (ครั้ง/นาที)'],
+                bloodSugar: row['น้ำตาลในเลือด (mg/dl)'],
+                activities: row['กิจกรรมที่ปฏิบัติ'],
+                assessment: row['ผลการประเมิน'],
+                images: row.photos || []
+            };
         }
 
-        let data;
+        const raw = localStorage.getItem('reportData');
+        if (!raw) return { error: 'ไม่พบข้อมูลรายงาน กรุณากลับไปกรอกแบบฟอร์มและกด "ดูตัวอย่างรายงาน" อีกครั้ง' };
         try {
-            data = JSON.parse(raw);
+            return JSON.parse(raw);
         } catch (e) {
-            docPage.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:#6b7280;">ไม่สามารถอ่านข้อมูลรายงานได้</div>`;
+            return { error: 'ไม่สามารถอ่านข้อมูลรายงานได้' };
+        }
+    }
+
+    async function render() {
+        const docPage = document.getElementById('docPage');
+        const data = await loadDataSource();
+
+        if (data.error) {
+            docPage.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:#6b7280;">${esc(data.error)}</div>`;
             return;
         }
 
