@@ -175,6 +175,9 @@
     .badge-status-ok { background: #dcfce7; color: #166534; }
     .badge-status-watch { background: #fef3c7; color: #92400e; }
     .badge-status-end { background: #f1f5f9; color: #64748b; }
+    .badge-sched-pending { background: #dbeafe; color: #1e40af; }
+    .badge-sched-done { background: #dcfce7; color: #166534; }
+    .badge-sched-cancel { background: #fee2e2; color: #991b1b; }
 
     .toast {
         position: fixed;
@@ -218,6 +221,7 @@
     <button class="tab-btn" data-tab="assign">🔗 มอบหมายดูแล</button>
     <button class="tab-btn" data-tab="users">👤 ผู้ใช้งานระบบ</button>
     <button class="tab-btn" data-tab="family">👪 ครอบครัวผู้ดูแล</button>
+    <button class="tab-btn" data-tab="schedule">📅 ตารางนัดเยี่ยม</button>
 </div>
 
 <div class="container">
@@ -435,6 +439,66 @@
                         </thead>
                         <tbody id="familyTableBody">
                             <tr class="empty-row"><td colspan="5">กำลังโหลด...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <!-- ================= TAB: ตารางนัดเยี่ยม ================= -->
+    <div class="tab-panel" id="tab-schedule">
+        <div class="card" style="margin-bottom:1.5rem;">
+            <h2>📅 สร้าง/ดูตารางนัดเยี่ยมรายเดือน</h2>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:end; margin-bottom:1rem;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>เดือน</label>
+                    <select id="sch_month"></select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>ปี (พ.ศ.)</label>
+                    <select id="sch_year"></select>
+                </div>
+                <button class="btn btn-secondary" onclick="loadSchedule()">🔍 ดูตาราง</button>
+                <button class="btn btn-primary" style="width:auto; flex:none;" onclick="runGenerateSchedule()">🔄 สร้างตารางอัตโนมัติสำหรับเดือนนี้</button>
+            </div>
+            <div class="hint">
+                สร้างอัตโนมัติจาก "ความถี่การเยี่ยม" ที่ตั้งไว้ในข้อมูลผู้สูงอายุแต่ละคน — ถ้าคู่ผู้สูงอายุ/ผู้ดูแลใดมีตารางของเดือนนี้อยู่แล้ว ระบบจะข้ามไป ไม่สร้างซ้ำ
+                (ผู้สูงอายุที่ตั้งความถี่เป็น "ตามนัด" จะไม่ถูกสร้างอัตโนมัติ ต้องเพิ่มด้วยตนเองด้านล่าง)
+            </div>
+        </div>
+
+        <div class="panel-grid">
+            <div class="card">
+                <h2 id="scheduleFormTitle">➕ เพิ่มนัดหมายด้วยตนเอง</h2>
+                <form id="scheduleForm">
+                    <div class="form-group">
+                        <label>ผู้สูงอายุ</label>
+                        <select id="s_elderly" required>
+                            <option value="">-- เลือกผู้สูงอายุ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ผู้รับผิดชอบ</label>
+                        <select id="s_staff" required>
+                            <option value="">-- เลือกผู้สูงอายุก่อน --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่นัดเยี่ยม</label>
+                        <input type="date" id="s_date" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">เพิ่มนัดหมาย</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>ตารางนัดเยี่ยมเดือนที่เลือก (<span id="scheduleCount">0</span> รายการ)</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>วันที่</th><th>ผู้สูงอายุ</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th><th>จัดการ</th></tr>
+                        </thead>
+                        <tbody id="scheduleTableBody">
+                            <tr class="empty-row"><td colspan="5">เลือกเดือน/ปี แล้วกด "ดูตาราง"</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -856,6 +920,126 @@
         }
     }
 
+    // ==============================================================
+    // ตารางนัดเยี่ยม
+    // ==============================================================
+    function populateScheduleFilters() {
+        const monthSel = document.getElementById('sch_month');
+        const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        monthSel.innerHTML = months.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
+
+        const now = new Date();
+        monthSel.value = now.getMonth() + 1;
+
+        const yearSel = document.getElementById('sch_year');
+        const thisYear = now.getFullYear();
+        let opts = '';
+        for (let y = thisYear - 1; y <= thisYear + 1; y++) {
+            opts += `<option value="${y}">${y + 543}</option>`;
+        }
+        yearSel.innerHTML = opts;
+        yearSel.value = thisYear;
+    }
+
+    function formatThaiDateShort(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+    }
+
+    function scheduleStatusBadge(status) {
+        if (status === 'เยี่ยมแล้ว') return `<span class="badge badge-sched-done">เยี่ยมแล้ว</span>`;
+        if (status === 'ยกเลิก') return `<span class="badge badge-sched-cancel">ยกเลิก</span>`;
+        return `<span class="badge badge-sched-pending">นัดหมาย</span>`;
+    }
+
+    async function loadSchedule() {
+        const month = document.getElementById('sch_month').value;
+        const year = document.getElementById('sch_year').value;
+        const tbody = document.getElementById('scheduleTableBody');
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="5">กำลังโหลด...</td></tr>';
+
+        const json = await apiGet('getAllSchedule', { month, year });
+        if (!json.success || json.data.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="5">ยังไม่มีตารางนัดในเดือนนี้</td></tr>';
+            document.getElementById('scheduleCount').textContent = '0';
+            return;
+        }
+
+        document.getElementById('scheduleCount').textContent = json.data.length;
+        const sorted = json.data.slice().sort((a, b) => a.visitDate.localeCompare(b.visitDate));
+        tbody.innerHTML = sorted.map(row => `
+            <tr>
+                <td>${formatThaiDateShort(row.visitDate)}${row.originalDate ? `<br><span style="font-size:0.72rem;color:var(--text-secondary);">เลื่อนจาก ${formatThaiDateShort(row.originalDate)}</span>` : ''}</td>
+                <td>${esc(row.elderlyName)}</td>
+                <td>${esc(row.staffName)}</td>
+                <td>${scheduleStatusBadge(row.status)}${row.reason ? `<br><span style="font-size:0.72rem;color:var(--text-secondary);">เหตุผล: ${esc(row.reason)}</span>` : ''}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-danger btn-sm" onclick="deleteSchedule('${row.id}')">ลบ</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function runGenerateSchedule() {
+        const month = document.getElementById('sch_month').value;
+        const year = document.getElementById('sch_year').value;
+        if (!confirm(`สร้างตารางนัดเยี่ยมอัตโนมัติสำหรับเดือนที่เลือกใช่หรือไม่? (จะข้ามคู่ผู้สูงอายุ/ผู้ดูแลที่มีตารางของเดือนนี้อยู่แล้ว)`)) return;
+        const json = await apiGet('generateSchedule', { month, year });
+        if (json.success) {
+            showToast(`สร้างนัดหมายใหม่ ${json.created} รายการ`, 'success');
+            loadSchedule();
+        } else {
+            showToast(json.message || 'สร้างตารางไม่สำเร็จ', 'error');
+        }
+    }
+
+    document.getElementById('s_elderly').addEventListener('change', function () {
+        const elderlyId = this.value;
+        const staffSelect = document.getElementById('s_staff');
+        const assigned = assignCache.filter(a => String(a.elderlyId) === String(elderlyId));
+        if (assigned.length === 0) {
+            staffSelect.innerHTML = '<option value="">-- ยังไม่มีผู้ดูแลที่มอบหมาย --</option>';
+            return;
+        }
+        staffSelect.innerHTML = '<option value="">-- เลือกผู้ดูแล --</option>' +
+            assigned.map(a => `<option value="${esc(a.staffName)}">${esc(a.staffName)} (${esc(a.type)})</option>`).join('');
+    });
+
+    document.getElementById('scheduleForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const elderlyId = document.getElementById('s_elderly').value;
+        const elderlyRow = elderlyCache.find(r => r['รหัส'] === elderlyId);
+        if (!elderlyRow) { showToast('กรุณาเลือกผู้สูงอายุ', 'error'); return; }
+        const staffName = document.getElementById('s_staff').value;
+        if (!staffName) { showToast('กรุณาเลือกผู้ดูแล', 'error'); return; }
+        const visitDate = document.getElementById('s_date').value;
+        if (!visitDate) { showToast('กรุณาเลือกวันที่', 'error'); return; }
+
+        const payload = { elderlyId, elderlyName: elderlyRow['ชื่อ-สกุล'], staffName, visitDate };
+        const json = await apiGet('adminSaveSchedule', { data: JSON.stringify(payload) });
+        if (json.success) {
+            showToast('เพิ่มนัดหมายสำเร็จ', 'success');
+            document.getElementById('scheduleForm').reset();
+            loadSchedule();
+        } else {
+            showToast(json.message || 'เพิ่มไม่สำเร็จ', 'error');
+        }
+    });
+
+    async function deleteSchedule(id) {
+        if (!confirm('ยืนยันการลบนัดหมายนี้?')) return;
+        const json = await apiGet('adminDeleteSchedule', { id });
+        if (json.success) {
+            showToast('ลบสำเร็จ', 'success');
+            loadSchedule();
+        } else {
+            showToast(json.message || 'ลบไม่สำเร็จ', 'error');
+        }
+    }
+
     // ===== Init =====
     async function init() {
         await loadElderly();
@@ -863,6 +1047,8 @@
         await loadAssignments();
         await loadUsers();
         await loadFamily();
+        populateScheduleFilters();
+        await loadSchedule();
     }
     init();
 </script>
