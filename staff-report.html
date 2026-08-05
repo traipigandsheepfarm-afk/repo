@@ -221,6 +221,9 @@
                     </div>
                     ${v['กิจกรรมที่ปฏิบัติ'] ? `<div class="visit-activities">กิจกรรม: ${esc(v['กิจกรรมที่ปฏิบัติ'])}</div>` : ''}
                     ${v['ผลการประเมิน'] ? `<div class="visit-assessment">${esc(v['ผลการประเมิน'])}</div>` : ''}
+                    <div style="margin-top:0.6rem;">
+                        <a href="print-report.html?seq=${encodeURIComponent(v['ลำดับ'])}" target="_blank" style="font-size:0.8rem;color:var(--primary);text-decoration:none;font-weight:600;">🖨️ พิมพ์รายงานฉบับนี้</a>
+                    </div>
                 </div>`).join('')
             : `<div class="empty-note">ยังไม่มีประวัติการบันทึก</div>`;
 
