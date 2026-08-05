@@ -598,6 +598,7 @@
                 <td>${esc(row['ความถี่การเยี่ยม'])}</td>
                 <td>${statusBadge(row['สถานะ'])}</td>
                 <td class="actions-cell">
+                    <a class="btn btn-secondary btn-sm" href="elderly-report.html?id=${row['รหัส']}" target="_blank" style="text-decoration:none;display:inline-block;">📄 รายงาน</a>
                     <button class="btn btn-secondary btn-sm" onclick="editElderly('${row['รหัส']}')">แก้ไข</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteElderly('${row['รหัส']}')">ลบ</button>
                 </td>
@@ -774,6 +775,7 @@
                 <td>${roleBadge(row.role)}</td>
                 <td class="pin-cell">${esc(row.pin)}</td>
                 <td class="actions-cell">
+                    ${row.role !== 'CM' ? `<a class="btn btn-secondary btn-sm" href="staff-report.html?name=${encodeURIComponent(row.name)}" target="_blank" style="text-decoration:none;display:inline-block;">📄 รายงาน</a>` : ''}
                     <button class="btn btn-secondary btn-sm" onclick="editUser('${row.id}')">แก้ไข</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteUser('${row.id}')">ลบ</button>
                 </td>
