@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตารางนัดเยี่ยมของฉัน - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f4f6fb;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --warn: #f59e0b;
+        --error: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: var(--background);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .topbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .topbar h1 { font-size: 1.15rem; font-weight: 700; }
+    .topbar .sub { font-size: 0.8rem; opacity: 0.9; }
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+    .back-link {
+        color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600;
+        background: rgba(255,255,255,0.18); padding: 0.45rem 1rem; border-radius: 999px;
+    }
+    .user-chip {
+        display: flex; align-items: center; gap: 0.75rem;
+        background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.85rem;
+    }
+    .user-chip button {
+        background: white; color: var(--primary-dark); border: none;
+        padding: 0.35rem 0.9rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 1.75rem 1.25rem; }
+
+    .cal-nav {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+    .cal-nav button {
+        background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+        padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; font-family: inherit; font-weight: 600;
+    }
+    .cal-nav h2 { font-size: 1.15rem; font-weight: 700; }
+
+    .calendar {
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+    }
+    .cal-weekdays {
+        display: grid; grid-template-columns: repeat(7, 1fr);
+        background: var(--primary-light);
+    }
+    .cal-weekdays div {
+        text-align: center; padding: 0.6rem 0.2rem; font-size: 0.78rem; font-weight: 700; color: var(--primary-dark);
+    }
+    .cal-grid {
+        display: grid; grid-template-columns: repeat(7, 1fr);
+    }
+    .cal-cell {
+        min-height: 68px;
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 0.35rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        position: relative;
+    }
+    .cal-cell:hover { background: var(--background); }
+    .cal-cell.empty { background: #fafafa; cursor: default; }
+    .cal-cell.today { background: #fffbeb; }
+    .cal-cell.selected { background: var(--primary-light); }
+    .cal-cell .day-num { font-size: 0.85rem; font-weight: 600; }
+    .cal-dots { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; }
+    .cal-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .dot-pending { background: var(--primary); }
+    .dot-done { background: var(--success); }
+    .dot-cancel { background: var(--error); }
+
+    .day-detail {
+        margin-top: 1.25rem;
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        padding: 1.25rem 1.5rem;
+    }
+    .day-detail h3 { font-size: 1rem; margin-bottom: 1rem; }
+    .appt-item {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.9rem 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+    .appt-item .appt-top {
+        display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;
+    }
+    .appt-item .appt-name { font-weight: 700; }
+    .badge { padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .badge-pending { background: var(--primary-light); color: var(--primary-dark); }
+    .badge-done { background: #dcfce7; color: #166534; }
+    .badge-cancel { background: #fee2e2; color: #991b1b; }
+    .appt-note { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .appt-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .appt-actions button {
+        padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+        cursor: pointer; font-family: inherit; border: none;
+    }
+    .btn-reschedule { background: #fef3c7; color: #92400e; }
+    .btn-cancel-appt { background: #fee2e2; color: #991b1b; }
+    .btn-visit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration:none; display:inline-block; }
+
+    .reschedule-form {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--border);
+        display: none;
+    }
+    .reschedule-form.visible { display: block; }
+    .reschedule-form label { font-size: 0.8rem; font-weight: 600; display:block; margin-bottom:0.3rem; }
+    .reschedule-form input, .reschedule-form textarea {
+        width: 100%; padding: 0.6rem 0.75rem; border: 2px solid var(--border); border-radius: 8px;
+        font-family: inherit; font-size: 0.9rem; margin-bottom: 0.6rem;
+    }
+    .reschedule-form textarea { min-height: 60px; resize: vertical; }
+    .reschedule-form .btn-row { display: flex; gap: 0.5rem; }
+    .reschedule-form .btn-row button {
+        flex: 1; padding: 0.55rem; border-radius: 8px; font-family: inherit; font-weight: 600; cursor: pointer; border: none;
+    }
+    .btn-confirm-reschedule { background: var(--primary); color: white; }
+    .btn-cancel-form { background: var(--background); color: var(--text-primary); border: 2px solid var(--border) !important; }
+
+    .empty-note { color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 1.5rem; }
+    .loading-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div>
+        <h1>📅 ตารางนัดเยี่ยมของฉัน</h1>
+        <div class="sub">ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุและคนพิการตำบลทุ่งหลวง</div>
+    </div>
+    <div class="topbar-right">
+        <a class="back-link" href="staff-dashboard.html">← กลับหน้ารายชื่อผู้สูงอายุ</a>
+        <div class="user-chip">
+            <span id="userLabel">-</span>
+            <button onclick="logout()">ออกจากระบบ</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="cal-nav">
+        <button onclick="changeMonth(-1)">‹ เดือนก่อน</button>
+        <h2 id="monthLabel">-</h2>
+        <button onclick="changeMonth(1)">เดือนถัดไป ›</button>
+    </div>
+
+    <div class="calendar">
+        <div class="cal-weekdays">
+            <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
+        </div>
+        <div class="cal-grid" id="calGrid">
+            <div class="loading-state" style="grid-column: 1 / -1;">กำลังโหลด...</div>
+        </div>
+    </div>
+
+    <div class="day-detail" id="dayDetail" style="display:none;">
+        <h3 id="dayDetailTitle">-</h3>
+        <div id="dayDetailBody"></div>
+    </div>
+</div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    const userName = sessionStorage.getItem('userName');
+    const userRole = sessionStorage.getItem('userRole');
+    if (!userName) {
+        window.location.href = 'login.html';
+    } else if (userRole === 'CM') {
+        window.location.href = 'admin.html';
+    } else {
+        document.getElementById('userLabel').textContent = `${userName} (${userRole})`;
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    const MONTHS_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+    const today = new Date();
+    let viewYear = today.getFullYear();
+    let viewMonth = today.getMonth() + 1; // 1-12
+    let scheduleData = [];
+    let selectedDateStr = null;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function dateKey(y, m, d) { return `${y}-${pad(m)}-${pad(d)}`; }
+
+    function changeMonth(delta) {
+        viewMonth += delta;
+        if (viewMonth > 12) { viewMonth = 1; viewYear++; }
+        if (viewMonth < 1) { viewMonth = 12; viewYear--; }
+        document.getElementById('dayDetail').style.display = 'none';
+        selectedDateStr = null;
+        loadCalendar();
+    }
+
+    async function loadCalendar() {
+        document.getElementById('monthLabel').textContent = `${MONTHS_TH[viewMonth - 1]} ${viewYear + 543}`;
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = '<div class="loading-state" style="grid-column: 1 / -1;">กำลังโหลด...</div>';
+
+        const json = await apiGet('getScheduleForStaff', { name: userName, month: viewMonth, year: viewYear });
+        scheduleData = json.success ? json.data : [];
+
+        renderCalendarGrid();
+    }
+
+    function renderCalendarGrid() {
+        const grid = document.getElementById('calGrid');
+        const firstDay = new Date(viewYear, viewMonth - 1, 1).getDay(); // 0=อา
+        const daysInMonth = new Date(viewYear, viewMonth, 0).getDate();
+        const todayKey = dateKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+        let html = '';
+        for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell empty"></div>';
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const key = dateKey(viewYear, viewMonth, d);
+            const dayAppts = scheduleData.filter(a => a.visitDate === key);
+            const dots = dayAppts.map(a => {
+                const cls = a.status === 'เยี่ยมแล้ว' ? 'dot-done' : (a.status === 'ยกเลิก' ? 'dot-cancel' : 'dot-pending');
+                return `<span class="cal-dot ${cls}"></span>`;
+            }).join('');
+
+            let cellClass = 'cal-cell';
+            if (key === todayKey) cellClass += ' today';
+            if (key === selectedDateStr) cellClass += ' selected';
+
+            html += `
+                <div class="${cellClass}" onclick="selectDay('${key}')">
+                    <div class="day-num">${d}</div>
+                    <div class="cal-dots">${dots}</div>
+                </div>`;
+        }
+
+        grid.innerHTML = html;
+    }
+
+    function selectDay(key) {
+        selectedDateStr = key;
+        renderCalendarGrid();
+
+        const dayAppts = scheduleData.filter(a => a.visitDate === key);
+        const detail = document.getElementById('dayDetail');
+        const d = new Date(key);
+        document.getElementById('dayDetailTitle').textContent =
+            `วันที่ ${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear() + 543}`;
+
+        if (dayAppts.length === 0) {
+            document.getElementById('dayDetailBody').innerHTML = `<div class="empty-note">ไม่มีนัดหมายในวันนี้</div>`;
+        } else {
+            document.getElementById('dayDetailBody').innerHTML = dayAppts.map(a => {
+                const badge = a.status === 'เยี่ยมแล้ว'
+                    ? `<span class="badge badge-done">เยี่ยมแล้ว</span>`
+                    : a.status === 'ยกเลิก'
+                        ? `<span class="badge badge-cancel">ยกเลิก</span>`
+                        : `<span class="badge badge-pending">นัดหมาย</span>`;
+
+                const canAct = a.status === 'นัดหมาย';
+                const reasonNote = a.reason ? `<div class="appt-note">เหตุผลที่เลื่อนล่าสุด: ${esc(a.reason)}</div>` : '';
+                const originalNote = a.originalDate ? `<div class="appt-note">นัดเดิม: ${esc(a.originalDate)}</div>` : '';
+
+                return `
+                <div class="appt-item" id="appt-${a.id}">
+                    <div class="appt-top">
+                        <span class="appt-name">${esc(a.elderlyName)}</span>
+                        ${badge}
+                    </div>
+                    ${originalNote}
+                    ${reasonNote}
+                    ${canAct ? `
+                        <div class="appt-actions">
+                            <a class="btn-visit" href="elderly-care-log.html?elderlyId=${encodeURIComponent(a.elderlyId)}">📝 บันทึกการเยี่ยม</a>
+                            <button class="btn-reschedule" onclick="toggleRescheduleForm('${a.id}')">🔁 เลื่อนนัด</button>
+                            <button class="btn-cancel-appt" onclick="doCancelAppointment('${a.id}')">✕ ยกเลิกนัด</button>
+                        </div>
+                        <div class="reschedule-form" id="reform-${a.id}">
+                            <label>เลื่อนเป็นวันที่</label>
+                            <input type="date" id="rdate-${a.id}">
+                            <label>เหตุผล (ถ้ามี)</label>
+                            <textarea id="rreason-${a.id}" placeholder="เช่น ติดภารกิจส่วนตัว"></textarea>
+                            <div class="btn-row">
+                                <button class="btn-cancel-form" onclick="toggleRescheduleForm('${a.id}')">ยกเลิก</button>
+                                <button class="btn-confirm-reschedule" onclick="submitReschedule('${a.id}')">ยืนยันเลื่อนนัด</button>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        detail.style.display = 'block';
+    }
+
+    function toggleRescheduleForm(id) {
+        const form = document.getElementById(`reform-${id}`);
+        form.classList.toggle('visible');
+    }
+
+    async function submitReschedule(id) {
+        const newDate = document.getElementById(`rdate-${id}`).value;
+        const reason = document.getElementById(`rreason-${id}`).value.trim();
+        if (!newDate) { alert('กรุณาเลือกวันที่ใหม่'); return; }
+
+        const json = await apiGet('rescheduleAppointment', { data: JSON.stringify({ id, newDate, reason }) });
+        if (json.success) {
+            await loadCalendar();
+            if (selectedDateStr) selectDay(selectedDateStr);
+        } else {
+            alert(json.message || 'เลื่อนนัดไม่สำเร็จ');
+        }
+    }
+
+    async function doCancelAppointment(id) {
+        if (!confirm('ยืนยันการยกเลิกนัดหมายนี้?')) return;
+        const json = await apiGet('cancelAppointment', { id });
+        if (json.success) {
+            await loadCalendar();
+            if (selectedDateStr) selectDay(selectedDateStr);
+        } else {
+            alert(json.message || 'ยกเลิกไม่สำเร็จ');
+        }
+    }
+
+    if (userName && userRole !== 'CM') {
+        loadCalendar();
+    }
+</script>
+
+</body>
+</html>
