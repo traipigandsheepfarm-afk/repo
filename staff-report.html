@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานการปฏิบัติงานตามผู้ดูแล - ระบบดูแลผู้สูงอายุ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #dbeafe;
+        --background: #f4f6fb;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: #e2e8f0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        background: var(--background);
+        color: var(--text-primary);
+        padding: 1.5rem;
+    }
+
+    .toolbar {
+        max-width: 900px;
+        margin: 0 auto 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .toolbar a.back-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+    .toolbar button {
+        padding: 0.65rem 1.3rem; border-radius: 10px; font-family: inherit; font-size: 0.9rem;
+        font-weight: 600; cursor: pointer; border: none; background: var(--primary); color: white;
+    }
+
+    .search-box {
+        max-width: 900px; margin: 0 auto 1.25rem; background: var(--surface); border-radius: 14px;
+        padding: 1rem 1.25rem; border: 1px solid var(--border); display: flex; gap: 0.75rem;
+        align-items: center; flex-wrap: wrap;
+    }
+    .search-box select {
+        flex: 1; min-width: 220px; padding: 0.7rem 0.9rem; border: 2px solid var(--border);
+        border-radius: 10px; font-family: inherit; font-size: 0.95rem;
+    }
+
+    .sheet {
+        max-width: 900px; margin: 0 auto; background: var(--surface); border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08); overflow: hidden;
+    }
+    .report-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem 2.25rem;
+    }
+    .report-header .kicker { font-size: 0.82rem; opacity: 0.85; margin-bottom: 0.3rem; }
+    .report-header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .report-header .role-tag {
+        display: inline-block; background: rgba(255,255,255,0.2); padding: 0.2rem 0.7rem;
+        border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+    }
+
+    .report-body { padding: 2rem 2.25rem 2.5rem; }
+
+    .summary-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .chip { background: var(--primary-light); color: var(--primary-dark); padding: 0.55rem 1.1rem; border-radius: 999px; font-size: 0.88rem; font-weight: 600; }
+
+    .section { margin-bottom: 1.75rem; }
+    .section-title {
+        font-size: 1.05rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.9rem;
+        padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light);
+    }
+
+    .elderly-breakdown { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.75rem; }
+    .elderly-chip {
+        background: var(--background); border: 1px solid var(--border); border-radius: 10px;
+        padding: 0.6rem 0.9rem; font-size: 0.85rem;
+    }
+    .elderly-chip strong { color: var(--primary-dark); }
+    .elderly-chip a { color: var(--primary); text-decoration: none; font-size: 0.78rem; margin-left: 0.4rem; }
+
+    .visit-item { border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.85rem; }
+    .visit-item .visit-top {
+        display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .visit-item .visit-date { font-weight: 700; }
+    .visit-item .visit-elderly { font-size: 0.85rem; color: var(--primary-dark); font-weight: 600; }
+    .visit-item .visit-vitals { display: flex; gap: 1.25rem; font-size: 0.85rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .visit-item .visit-vitals span strong { color: var(--primary-dark); }
+    .visit-item .visit-activities { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .visit-item .visit-assessment { font-size: 0.88rem; background: var(--background); border-radius: 8px; padding: 0.6rem 0.8rem; }
+
+    .empty-note { color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 1.5rem; }
+    .loading-state { text-align: center; padding: 4rem 1rem; color: var(--text-secondary); }
+
+    @media print {
+        body { background: white; padding: 0; }
+        .toolbar, .search-box { display: none; }
+        .sheet { box-shadow: none; border-radius: 0; max-width: 100%; }
+        .report-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .visit-item { break-inside: avoid; }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <a class="back-link" href="staff-dashboard.html">← กลับหน้ารายชื่อผู้สูงอายุ</a>
+    <button onclick="window.print()">🖨️ พิมพ์ / บันทึกเป็น PDF</button>
+</div>
+
+<div class="search-box" id="searchBox" style="display:none;">
+    <select id="staffSelect">
+        <option value="">-- เลือกผู้ดูแลเพื่อดูรายงาน --</option>
+    </select>
+    <button style="padding:0.7rem 1.3rem;border-radius:10px;border:none;background:var(--primary);color:white;font-family:inherit;font-weight:600;cursor:pointer;" onclick="goToSelected()">ดูรายงาน</button>
+</div>
+
+<div id="loadingState" class="loading-state">กำลังโหลดข้อมูล...</div>
+
+<div class="sheet" id="reportSheet" style="display:none;">
+    <div class="report-header">
+        <div class="kicker">รายงานการปฏิบัติงานตามผู้ดูแล</div>
+        <h1 id="staffName">-</h1>
+        <span class="role-tag" id="staffRole">-</span>
+    </div>
+    <div class="report-body" id="reportBody"></div>
+</div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
+
+    const userName = sessionStorage.getItem('userName');
+    const userRole = sessionStorage.getItem('userRole');
+
+    function esc(str) {
+        if (str === undefined || str === null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function apiGet(action, params) {
+        params = params || {};
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', action);
+        Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+        const res = await fetch(url.toString());
+        return res.json();
+    }
+
+    function formatThaiDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+        } catch (e) { return dateStr; }
+    }
+
+    async function loadStaffSelect() {
+        const json = await apiGet('getStaffList');
+        if (json.success) {
+            document.getElementById('staffSelect').innerHTML =
+                '<option value="">-- เลือกผู้ดูแลเพื่อดูรายงาน --</option>' +
+                json.data.filter(u => u.role !== 'CM').map(u => `<option value="${esc(u.name)}">${esc(u.name)} (${esc(u.role)})</option>`).join('');
+        }
+    }
+
+    function goToSelected() {
+        const name = document.getElementById('staffSelect').value;
+        if (name) window.location.href = 'staff-report.html?name=' + encodeURIComponent(name);
+    }
+
+    async function loadReport(staffName) {
+        document.getElementById('searchBox').style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+
+        const [staffListRes, visitRes] = await Promise.all([
+            apiGet('getStaffList'),
+            apiGet('getVisitHistoryByStaff', { name: staffName })
+        ]);
+
+        document.getElementById('loadingState').style.display = 'none';
+
+        const staffInfo = staffListRes.success ? staffListRes.data.find(u => u.name === staffName) : null;
+        const visits = visitRes.success ? visitRes.data : [];
+
+        document.getElementById('staffName').textContent = staffName;
+        document.getElementById('staffRole').textContent = staffInfo ? staffInfo.role : '';
+
+        // สรุปจำนวนครั้งต่อผู้สูงอายุแต่ละคน
+        const byElderly = {};
+        visits.forEach(v => {
+            const name = v['ชื่อ-สกุล ผู้สูงอายุ'] || 'ไม่ระบุ';
+            byElderly[name] = (byElderly[name] || 0) + 1;
+        });
+        const elderlyNames = Object.keys(byElderly);
+
+        const breakdownHtml = elderlyNames.length
+            ? elderlyNames.map(name => `<div class="elderly-chip"><strong>${esc(name)}</strong> — ${byElderly[name]} ครั้ง</div>`).join('')
+            : `<div class="empty-note">ยังไม่มีประวัติการบันทึก</div>`;
+
+        const visitsHtml = visits.length
+            ? visits.slice().reverse().map(v => `
+                <div class="visit-item">
+                    <div class="visit-top">
+                        <span class="visit-date">${formatThaiDate(v['วันที่เยี่ยม'])} (${esc(v['เวลาเริ่ม'])} - ${esc(v['เวลาสิ้นสุด'])})</span>
+                        <span class="visit-elderly">👵 ${esc(v['ชื่อ-สกุล ผู้สูงอายุ'])}</span>
+                    </div>
+                    <div class="visit-vitals">
+                        <span>BP: <strong>${esc(v['ความดันโลหิต (mmHg)']) || '-'}</strong></span>
+                        <span>ชีพจร: <strong>${esc(v['ชีพจร (ครั้ง/นาที)']) || '-'}</strong></span>
+                        <span>น้ำตาล: <strong>${esc(v['น้ำตาลในเลือด (mg/dl)']) || '-'}</strong></span>
+                    </div>
+                    ${v['กิจกรรมที่ปฏิบัติ'] ? `<div class="visit-activities">กิจกรรม: ${esc(v['กิจกรรมที่ปฏิบัติ'])}</div>` : ''}
+                    ${v['ผลการประเมิน'] ? `<div class="visit-assessment">${esc(v['ผลการประเมิน'])}</div>` : ''}
+                </div>`).join('')
+            : `<div class="empty-note">ยังไม่มีประวัติการบันทึก</div>`;
+
+        document.getElementById('reportBody').innerHTML = `
+            <div class="summary-chips">
+                <span class="chip">📋 บันทึกทั้งหมด ${visits.length} ครั้ง</span>
+                <span class="chip">👵 ดูแลผู้สูงอายุ ${elderlyNames.length} คน</span>
+            </div>
+
+            <div class="section">
+                <div class="section-title">จำนวนครั้งแยกตามผู้สูงอายุ</div>
+                <div class="elderly-breakdown">${breakdownHtml}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">ประวัติการบันทึกทั้งหมด (เรียงล่าสุดก่อน)</div>
+                ${visitsHtml}
+            </div>
+        `;
+
+        document.getElementById('reportSheet').style.display = 'block';
+    }
+
+    async function init() {
+        const nameParam = new URLSearchParams(window.location.search).get('name');
+
+        if (nameParam) {
+            // มีชื่อระบุมาจาก URL แล้ว (จาก dashboard ของตนเอง หรือลิงก์จาก admin)
+            await loadReport(nameParam);
+            return;
+        }
+
+        if (userName && userRole && userRole !== 'CM') {
+            // CG/สหวิชาชีพ เข้าดูรายงานของตนเองโดยอัตโนมัติ
+            await loadReport(userName);
+            return;
+        }
+
+        // CM หรือไม่ได้ login ผ่านหน้านี้โดยตรง -> ให้เลือกผู้ดูแลเอง
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('searchBox').style.display = 'flex';
+        await loadStaffSelect();
+    }
+
+    init();
+</script>
+
+</body>
+</html>
