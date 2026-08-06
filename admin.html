@@ -927,6 +927,14 @@
         upcomingTarget = null;
     }
 
+    function roleBadgeForSchedule(elderlyId, staffName) {
+        const match = assignCache.find(a => String(a.elderlyId) === String(elderlyId) && a.staffName === staffName);
+        if (!match) return `<span class="badge badge-sched-pending" style="background:#f1f5f9;color:var(--text-secondary);">ไม่ระบุ</span>`;
+        return match.type === 'CG'
+            ? `<span class="badge badge-cg">CG</span>`
+            : `<span class="badge badge-staff">สหวิชาชีพ</span>`;
+    }
+
     async function loadUpcomingList() {
         if (!upcomingTarget) return;
         const json = await apiGet('getUpcomingScheduleForElderly', { elderlyId: upcomingTarget.elderlyId });
@@ -938,7 +946,7 @@
         listEl.innerHTML = json.data.map(row => `
             <div class="upcoming-item">
                 <div class="upcoming-date">${formatThaiDateFull(row.visitDate)}</div>
-                <div class="upcoming-staff">ผู้รับผิดชอบ: ${esc(row.staffName)}</div>
+                <div class="upcoming-staff">${roleBadgeForSchedule(upcomingTarget.elderlyId, row.staffName)} ผู้รับผิดชอบ: ${esc(row.staffName)}</div>
                 <div class="upcoming-actions">
                     <input type="date" id="uf-date-${row.id}" value="${row.visitDate}">
                     <button class="btn btn-primary btn-sm" onclick="saveUpcomingDate('${row.id}')">บันทึก</button>
