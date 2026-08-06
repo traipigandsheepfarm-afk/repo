@@ -175,6 +175,7 @@
     .badge-status-ok { background: #dcfce7; color: #166534; }
     .badge-status-watch { background: #fef3c7; color: #92400e; }
     .badge-status-end { background: #f1f5f9; color: #64748b; }
+    .badge-status-deceased { background: #f3f4f6; color: #374151; border: 1px solid #9ca3af; }
     .badge-sched-pending { background: #dbeafe; color: #1e40af; }
     .badge-sched-done { background: #dcfce7; color: #166534; }
     .badge-sched-cancel { background: #fee2e2; color: #991b1b; }
@@ -196,6 +197,36 @@
     .toast.success { background: var(--success); }
     .toast.error { background: var(--error); }
     @keyframes slideIn { from { transform: translateX(30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        z-index: 200;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal-box {
+        background: var(--surface);
+        border-radius: 18px;
+        max-width: 400px;
+        width: 100%;
+        padding: 1.75rem;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 { font-size: 1.05rem; margin-bottom: 1rem; }
+    .modal-info {
+        background: var(--background);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+    .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.25rem; }
+    .modal-actions .btn { flex: 1; }
 
     .hint { font-size: 0.78rem; color: var(--text-secondary); margin-top: -0.3rem; margin-bottom: 0.6rem; }
     .form-actions-inline { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
@@ -270,11 +301,17 @@
                     </div>
                     <div class="form-group">
                         <label>สถานะ</label>
-                        <select id="e_status">
+                        <select id="e_status" onchange="toggleDeathDateField()">
                             <option value="ปกติ">ปกติ</option>
                             <option value="เฝ้าระวัง">เฝ้าระวัง</option>
                             <option value="ยุติการดูแล">ยุติการดูแล</option>
+                            <option value="เสียชีวิต">เสียชีวิต</option>
                         </select>
+                    </div>
+                    <div class="form-group" id="e_deathdate_group" style="display:none;">
+                        <label>วันที่เสียชีวิต</label>
+                        <input type="date" id="e_deathdate">
+                        <div class="hint">ประวัติการเยี่ยมทั้งหมดของผู้สูงอายุคนนี้จะยังคงดูย้อนหลังได้ตามปกติ เพียงแต่จะไม่ปรากฏในรายชื่อให้บันทึกเยี่ยมใหม่อีก</div>
                     </div>
                     <div class="form-actions-inline">
                         <button type="submit" class="btn btn-primary" id="e_submitBtn">บันทึกข้อมูล</button>
@@ -512,6 +549,24 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="modal-overlay" id="reassignModal">
+    <div class="modal-box">
+        <h3>🔁 เปลี่ยนผู้ดูแล</h3>
+        <div id="reassignInfo" class="modal-info"></div>
+        <div class="form-group" style="margin-top:1rem;">
+            <label>ผู้ดูแลคนใหม่</label>
+            <select id="reassignSelect">
+                <option value="">-- เลือกผู้ดูแลคนใหม่ --</option>
+            </select>
+        </div>
+        <div class="hint">ประวัติการเยี่ยมที่บันทึกไปแล้วจะไม่ถูกแตะต้อง — แต่นัดหมายในอนาคตที่ยังไม่เกิดขึ้นของผู้ดูแลเดิม จะถูกย้ายให้ผู้ดูแลคนใหม่โดยอัตโนมัติ</div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeReassignModal()">ยกเลิก</button>
+            <button class="btn btn-primary" onclick="submitReassign()">ยืนยันเปลี่ยนผู้ดูแล</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
 
@@ -563,7 +618,13 @@
     function statusBadge(status) {
         if (status === 'เฝ้าระวัง') return `<span class="badge badge-status-watch">เฝ้าระวัง</span>`;
         if (status === 'ยุติการดูแล') return `<span class="badge badge-status-end">ยุติการดูแล</span>`;
+        if (status === 'เสียชีวิต') return `<span class="badge badge-status-deceased">เสียชีวิต</span>`;
         return `<span class="badge badge-status-ok">ปกติ</span>`;
+    }
+
+    function toggleDeathDateField() {
+        const status = document.getElementById('e_status').value;
+        document.getElementById('e_deathdate_group').style.display = (status === 'เสียชีวิต') ? 'block' : 'none';
     }
 
     // ===== Tabs =====
@@ -596,7 +657,7 @@
                 <td><strong>${esc(row['ชื่อ-สกุล'])}</strong><br><span style="color:var(--text-secondary);font-size:0.78rem;">${esc(row['ที่อยู่'])}</span></td>
                 <td>${esc(row['ระดับ ADL'])}</td>
                 <td>${esc(row['ความถี่การเยี่ยม'])}</td>
-                <td>${statusBadge(row['สถานะ'])}</td>
+                <td>${statusBadge(row['สถานะ'])}${row['สถานะ'] === 'เสียชีวิต' && row['วันที่เสียชีวิต'] ? `<br><span style="font-size:0.72rem;color:var(--text-secondary);">${esc(row['วันที่เสียชีวิต'])}</span>` : ''}</td>
                 <td class="actions-cell">
                     <a class="btn btn-secondary btn-sm" href="elderly-report.html?id=${row['รหัส']}" target="_blank" style="text-decoration:none;display:inline-block;">📄 รายงาน</a>
                     <button class="btn btn-secondary btn-sm" onclick="editElderly('${row['รหัส']}')">แก้ไข</button>
@@ -617,6 +678,11 @@
     document.getElementById('elderlyForm').addEventListener('submit', async function (e) {
         e.preventDefault();
         const id = document.getElementById('e_id').value;
+        const status = document.getElementById('e_status').value;
+        if (status === 'เสียชีวิต' && !document.getElementById('e_deathdate').value) {
+            showToast('กรุณาระบุวันที่เสียชีวิต', 'error');
+            return;
+        }
         const payload = {
             id: id || undefined,
             name: document.getElementById('e_name').value.trim(),
@@ -625,7 +691,8 @@
             frequency: document.getElementById('e_frequency').value,
             conditions: document.getElementById('e_conditions').value.trim(),
             precautions: document.getElementById('e_precautions').value.trim(),
-            status: document.getElementById('e_status').value
+            status: status,
+            deathDate: document.getElementById('e_deathdate').value
         };
         const btn = document.getElementById('e_submitBtn');
         btn.disabled = true;
@@ -655,6 +722,8 @@
         document.getElementById('e_conditions').value = row['โรคประจำตัว'] || '';
         document.getElementById('e_precautions').value = row['ข้อควรระวังพิเศษ'] || '';
         document.getElementById('e_status').value = row['สถานะ'] || 'ปกติ';
+        document.getElementById('e_deathdate').value = row['วันที่เสียชีวิต'] || '';
+        toggleDeathDateField();
         document.getElementById('elderlyFormTitle').textContent = '✏️ แก้ไขข้อมูลผู้สูงอายุ';
         document.getElementById('e_submitBtn').textContent = 'บันทึกการแก้ไข';
         document.getElementById('e_cancelBtn').style.display = 'block';
@@ -664,6 +733,7 @@
     function resetElderlyForm() {
         document.getElementById('elderlyForm').reset();
         document.getElementById('e_id').value = '';
+        toggleDeathDateField();
         document.getElementById('elderlyFormTitle').textContent = '➕ เพิ่มผู้สูงอายุ';
         document.getElementById('e_submitBtn').textContent = 'บันทึกข้อมูล';
         document.getElementById('e_cancelBtn').style.display = 'none';
@@ -714,6 +784,7 @@
                 <td>${row.type === 'CG' ? '<span class="badge badge-cg">CG</span>' : '<span class="badge badge-staff">สหวิชาชีพ</span>'}</td>
                 <td>${esc(row.staffName)}</td>
                 <td class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" onclick="openReassignModal('${row.id}')">🔁 เปลี่ยนผู้ดูแล</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteAssignment('${row.id}')">ลบ</button>
                 </td>
             </tr>
@@ -752,6 +823,50 @@
             loadAssignments();
         } else {
             showToast(json.message || 'ลบไม่สำเร็จ', 'error');
+        }
+    }
+
+    // ===== เปลี่ยนผู้ดูแล (Reassign) =====
+    let reassignTarget = null;
+
+    async function openReassignModal(assignmentId) {
+        const row = assignCache.find(r => r.id === assignmentId);
+        if (!row) return;
+        reassignTarget = row;
+
+        document.getElementById('reassignInfo').innerHTML =
+            `ผู้สูงอายุ: <strong>${esc(row.elderlyName)}</strong><br>ผู้ดูแลปัจจุบัน: <strong>${esc(row.staffName)}</strong> (${esc(row.type)})`;
+
+        const staffJson = await apiGet('getStaffList', { role: row.type });
+        const options = staffJson.success
+            ? staffJson.data.filter(u => u.name !== row.staffName)
+                .map(u => `<option value="${esc(u.name)}">${esc(u.name)}</option>`).join('')
+            : '';
+        document.getElementById('reassignSelect').innerHTML =
+            '<option value="">-- เลือกผู้ดูแลคนใหม่ --</option>' + options;
+
+        document.getElementById('reassignModal').classList.add('visible');
+    }
+
+    function closeReassignModal() {
+        document.getElementById('reassignModal').classList.remove('visible');
+        reassignTarget = null;
+    }
+
+    async function submitReassign() {
+        const newStaffName = document.getElementById('reassignSelect').value;
+        if (!newStaffName) { showToast('กรุณาเลือกผู้ดูแลคนใหม่', 'error'); return; }
+        if (!reassignTarget) return;
+
+        const payload = { assignmentId: reassignTarget.id, newStaffName: newStaffName };
+        const json = await apiGet('reassignStaff', { data: JSON.stringify(payload) });
+        if (json.success) {
+            const moveNote = json.movedCount > 0 ? ` และย้ายนัดหมายในอนาคต ${json.movedCount} รายการให้แล้ว` : '';
+            showToast(`เปลี่ยนจาก "${json.oldStaffName}" เป็น "${json.newStaffName}" สำเร็จ${moveNote}`, 'success');
+            closeReassignModal();
+            loadAssignments();
+        } else {
+            showToast(json.message || 'เปลี่ยนผู้ดูแลไม่สำเร็จ', 'error');
         }
     }
 
