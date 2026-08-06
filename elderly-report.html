@@ -361,7 +361,14 @@
             }).join('')
             : `<div class="empty-note">ยังไม่มีแบบประเมินความพึงพอใจ</div>`;
 
+        const deceasedBanner = elderly['สถานะ'] === 'เสียชีวิต'
+            ? `<div style="background:#f3f4f6;border:1px solid #9ca3af;border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.9rem;color:#374151;">
+                 🕊️ ผู้สูงอายุท่านนี้เสียชีวิตแล้ว${elderly['วันที่เสียชีวิต'] ? ` เมื่อวันที่ ${formatThaiDate(elderly['วันที่เสียชีวิต'])}` : ''} — ข้อมูลด้านล่างเป็นประวัติการให้บริการขณะยังมีชีวิตอยู่
+               </div>`
+            : '';
+
         document.getElementById('reportBody').innerHTML = `
+            ${deceasedBanner}
             <div class="care-plan-grid">
                 <div class="item"><span class="label">ระดับ ADL</span><span class="value">${esc(elderly['ระดับ ADL']) || '-'}</span></div>
                 <div class="item"><span class="label">ความถี่การเยี่ยม</span><span class="value">${esc(elderly['ความถี่การเยี่ยม']) || '-'}</span></div>
