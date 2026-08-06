@@ -134,6 +134,18 @@
     }
 
     .summary-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .role-badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        margin-right: 0.5rem;
+        white-space: nowrap;
+    }
+    .role-badge-cg { background: #dcfce7; color: #166534; }
+    .role-badge-staff { background: var(--primary-light); color: var(--primary-dark); }
+    .role-badge-unknown { background: #f1f5f9; color: var(--text-secondary); }
     .chip {
         background: var(--primary-light);
         color: var(--primary-dark);
@@ -317,11 +329,22 @@
             ? family.map(f => `<div class="item"><span class="label">${esc(f.relation)}</span><span class="value">${esc(f.name)} — ${esc(f.phone)}</span></div>`).join('')
             : `<div class="item"><span class="value" style="color:var(--text-secondary);font-weight:400;">ยังไม่มีข้อมูลครอบครัว</span></div>`;
 
+        // สร้างตารางค้นหาบทบาท (CG/สหวิชาชีพ) จากชื่อผู้ดูแล เพื่อกำกับป้ายในรายการนัดหมาย
+        const staffRoleMap = {};
+        assignments.forEach(a => { staffRoleMap[a.staffName] = a.type; });
+
+        function roleBadgeHtml(staffName) {
+            const type = staffRoleMap[staffName];
+            if (type === 'CG') return `<span class="role-badge role-badge-cg">CG</span>`;
+            if (type === 'สหวิชาชีพ') return `<span class="role-badge role-badge-staff">สหวิชาชีพ</span>`;
+            return `<span class="role-badge role-badge-unknown">ไม่ระบุ</span>`;
+        }
+
         const upcomingHtml = upcoming.length
             ? upcoming.map(u => `
                 <div class="visit-item" style="display:flex;justify-content:space-between;align-items:center;">
                     <span class="visit-date">${formatThaiDate(u.visitDate)}</span>
-                    <span class="visit-staff">ผู้รับผิดชอบ: ${esc(u.staffName)}</span>
+                    <span class="visit-staff">${roleBadgeHtml(u.staffName)}ผู้รับผิดชอบ: ${esc(u.staffName)}</span>
                 </div>`).join('')
             : `<div class="empty-note">ไม่มีนัดหมายที่รอดำเนินการ</div>`;
 
