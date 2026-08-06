@@ -287,10 +287,11 @@
         document.getElementById('searchBox').style.display = 'none';
         document.getElementById('loadingState').style.display = 'block';
 
-        const [detailRes, visitRes, surveyRes] = await Promise.all([
+        const [detailRes, visitRes, surveyRes, upcomingRes] = await Promise.all([
             apiGet('getElderlyDetail', { id }),
             apiGet('getVisitHistory', { elderlyId: id }),
-            apiGet('getSurveys', { elderlyId: id })
+            apiGet('getSurveys', { elderlyId: id }),
+            apiGet('getUpcomingScheduleForElderly', { elderlyId: id })
         ]);
 
         document.getElementById('loadingState').style.display = 'none';
@@ -306,6 +307,7 @@
         const assignments = detailRes.data.assignments;
         const visits = visitRes.success ? visitRes.data : [];
         const surveys = surveyRes.success ? surveyRes.data : [];
+        const upcoming = upcomingRes.success ? upcomingRes.data : [];
 
         document.getElementById('elderlyName').textContent = elderly['ชื่อ-สกุล'];
         document.getElementById('elderlyAddress').textContent = elderly['ที่อยู่'] || '';
@@ -314,6 +316,14 @@
         const familyHtml = family.length
             ? family.map(f => `<div class="item"><span class="label">${esc(f.relation)}</span><span class="value">${esc(f.name)} — ${esc(f.phone)}</span></div>`).join('')
             : `<div class="item"><span class="value" style="color:var(--text-secondary);font-weight:400;">ยังไม่มีข้อมูลครอบครัว</span></div>`;
+
+        const upcomingHtml = upcoming.length
+            ? upcoming.map(u => `
+                <div class="visit-item" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span class="visit-date">${formatThaiDate(u.visitDate)}</span>
+                    <span class="visit-staff">ผู้รับผิดชอบ: ${esc(u.staffName)}</span>
+                </div>`).join('')
+            : `<div class="empty-note">ไม่มีนัดหมายที่รอดำเนินการ</div>`;
 
         const avgScore = surveys.length
             ? (surveys.reduce((sum, s) => sum + (parseInt(s.score) || 0), 0) / surveys.length).toFixed(1)
@@ -381,6 +391,11 @@
             <div class="section">
                 <div class="section-title">👪 ผู้ติดต่อในครอบครัว</div>
                 <div class="care-plan-grid" style="grid-template-columns:1fr;">${familyHtml}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📅 นัดหมายที่จะถึง (${upcoming.length} รายการ)</div>
+                ${upcomingHtml}
             </div>
 
             <div class="section">
