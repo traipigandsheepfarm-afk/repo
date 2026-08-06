@@ -226,6 +226,20 @@
         line-height: 1.6;
     }
     .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.25rem; }
+
+    .upcoming-item {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.88rem;
+    }
+    .upcoming-item .upcoming-date { font-weight: 700; color: var(--primary-dark); }
+    .upcoming-item .upcoming-staff { color: var(--text-secondary); }
+    .upcoming-item .upcoming-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; align-items: center; }
+    .upcoming-item .upcoming-actions input[type="date"] {
+        flex: 1; padding: 0.4rem 0.6rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.85rem;
+    }
     .modal-actions .btn { flex: 1; }
 
     .hint { font-size: 0.78rem; color: var(--text-secondary); margin-top: -0.3rem; margin-bottom: 0.6rem; }
@@ -574,6 +588,17 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="upcomingModal">
+    <div class="modal-box" style="max-width:560px;">
+        <h3>📅 นัดหมายที่จะถึง</h3>
+        <div id="upcomingElderlyName" class="modal-info"></div>
+        <div id="upcomingList" style="margin-top:1rem; max-height:420px; overflow-y:auto;"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeUpcomingModal()">ปิด</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8_WCN_ZsB8xNDpDHMHsuAx6mksZvDcijNdJORVzkhmOl6OIGlmcSyHECRbHAZDIJM/exec';
 
@@ -666,6 +691,7 @@
                 <td>${esc(row['ความถี่การเยี่ยม'])}</td>
                 <td>${statusBadge(row['สถานะ'])}${row['สถานะ'] === 'เสียชีวิต' && row['วันที่เสียชีวิต'] ? `<br><span style="font-size:0.72rem;color:var(--text-secondary);">${esc(row['วันที่เสียชีวิต'])}</span>` : ''}</td>
                 <td class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" onclick="openUpcomingModal('${row['รหัส']}', '${esc(row['ชื่อ-สกุล']).replace(/'/g, "\\'")}')">📅 นัดหมาย</button>
                     <a class="btn btn-secondary btn-sm" href="elderly-report.html?id=${row['รหัส']}" target="_blank" style="text-decoration:none;display:inline-block;">📄 รายงาน</a>
                     <button class="btn btn-secondary btn-sm" onclick="editElderly('${row['รหัส']}')">แก้ไข</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteElderly('${row['รหัส']}')">ลบ</button>
@@ -874,6 +900,75 @@
             loadAssignments();
         } else {
             showToast(json.message || 'เปลี่ยนผู้ดูแลไม่สำเร็จ', 'error');
+        }
+    }
+
+    // ===== นัดหมายที่จะถึง (ต่อผู้สูงอายุ 1 คน) =====
+    let upcomingTarget = null;
+
+    function formatThaiDateFull(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+    }
+
+    async function openUpcomingModal(elderlyId, elderlyName) {
+        upcomingTarget = { elderlyId, elderlyName };
+        document.getElementById('upcomingElderlyName').innerHTML = `นัดหมายทั้งหมดของ <strong>${esc(elderlyName)}</strong> ที่ยังไม่ถึง`;
+        document.getElementById('upcomingList').innerHTML = '<div class="empty-note" style="text-align:center;padding:1rem;">กำลังโหลด...</div>';
+        document.getElementById('upcomingModal').classList.add('visible');
+        await loadUpcomingList();
+    }
+
+    function closeUpcomingModal() {
+        document.getElementById('upcomingModal').classList.remove('visible');
+        upcomingTarget = null;
+    }
+
+    async function loadUpcomingList() {
+        if (!upcomingTarget) return;
+        const json = await apiGet('getUpcomingScheduleForElderly', { elderlyId: upcomingTarget.elderlyId });
+        const listEl = document.getElementById('upcomingList');
+        if (!json.success || json.data.length === 0) {
+            listEl.innerHTML = '<div class="empty-note" style="text-align:center;padding:1rem;">ไม่มีนัดหมายที่รอดำเนินการ</div>';
+            return;
+        }
+        listEl.innerHTML = json.data.map(row => `
+            <div class="upcoming-item">
+                <div class="upcoming-date">${formatThaiDateFull(row.visitDate)}</div>
+                <div class="upcoming-staff">ผู้รับผิดชอบ: ${esc(row.staffName)}</div>
+                <div class="upcoming-actions">
+                    <input type="date" id="uf-date-${row.id}" value="${row.visitDate}">
+                    <button class="btn btn-primary btn-sm" onclick="saveUpcomingDate('${row.id}')">บันทึก</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteUpcomingAppt('${row.id}')">ลบ</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function saveUpcomingDate(scheduleId) {
+        const newDate = document.getElementById(`uf-date-${scheduleId}`).value;
+        if (!newDate) { showToast('กรุณาเลือกวันที่', 'error'); return; }
+        const payload = { id: scheduleId, elderlyId: upcomingTarget.elderlyId, elderlyName: upcomingTarget.elderlyName, visitDate: newDate, status: 'นัดหมาย' };
+        const json = await apiGet('adminSaveSchedule', { data: JSON.stringify(payload) });
+        if (json.success) {
+            showToast('แก้ไขวันนัดสำเร็จ', 'success');
+            loadUpcomingList();
+        } else {
+            showToast(json.message || 'แก้ไขไม่สำเร็จ', 'error');
+        }
+    }
+
+    async function deleteUpcomingAppt(scheduleId) {
+        if (!confirm('ยืนยันการลบนัดหมายนี้?')) return;
+        const json = await apiGet('adminDeleteSchedule', { id: scheduleId });
+        if (json.success) {
+            showToast('ลบนัดหมายสำเร็จ', 'success');
+            loadUpcomingList();
+        } else {
+            showToast(json.message || 'ลบไม่สำเร็จ', 'error');
         }
     }
 
