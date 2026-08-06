@@ -273,16 +273,17 @@
                         <input type="text" id="e_address">
                     </div>
                     <div class="form-group">
-                        <label>ระดับ ADL / การช่วยเหลือตนเอง</label>
+                        <label>ระดับ ADL / การช่วยเหลือตนเอง (ใช้กำหนดกลุ่ม 1-4)</label>
                         <select id="e_adl">
-                            <option value="ช่วยเหลือตนเองได้">ช่วยเหลือตนเองได้</option>
-                            <option value="ช่วยเหลือตนเองได้บางส่วน">ช่วยเหลือตนเองได้บางส่วน</option>
-                            <option value="ติดบ้าน">ติดบ้าน</option>
-                            <option value="ติดเตียง">ติดเตียง</option>
+                            <option value="ช่วยเหลือตนเองได้">ช่วยเหลือตนเองได้ (กลุ่ม 1)</option>
+                            <option value="ช่วยเหลือตนเองได้บางส่วน">ช่วยเหลือตนเองได้บางส่วน (กลุ่ม 2)</option>
+                            <option value="ติดบ้าน">ติดบ้าน (กลุ่ม 3)</option>
+                            <option value="ติดเตียง">ติดเตียง (กลุ่ม 4)</option>
                         </select>
+                        <div class="hint">กำหนดความถี่ที่<strong>สหวิชาชีพ</strong>จะออกประเมินอัตโนมัติ — กลุ่ม 1-3: เดือนละ 1 ครั้ง, กลุ่ม 4 (ติดเตียง): เดือนละ 2 ครั้ง</div>
                     </div>
                     <div class="form-group">
-                        <label>ความถี่การเยี่ยม</label>
+                        <label>ความถี่การเยี่ยม (สำหรับ CG)</label>
                         <select id="e_frequency">
                             <option value="ทุกวัน">ทุกวัน</option>
                             <option value="สัปดาห์ละครั้ง">สัปดาห์ละครั้ง</option>
@@ -290,6 +291,7 @@
                             <option value="เดือนละครั้ง">เดือนละครั้ง</option>
                             <option value="ตามนัด">ตามนัด</option>
                         </select>
+                        <div class="hint">ใช้กำหนดความถี่ของ CG เท่านั้น ตั้งเองอิสระตามความจำเป็นรายบุคคล ไม่ผูกกับระดับ ADL</div>
                     </div>
                     <div class="form-group">
                         <label>โรคประจำตัว</label>
