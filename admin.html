@@ -287,11 +287,16 @@
                         <select id="e_frequency">
                             <option value="ทุกวัน">ทุกวัน</option>
                             <option value="สัปดาห์ละครั้ง">สัปดาห์ละครั้ง</option>
-                            <option value="2 สัปดาห์ครั้ง">2 สัปดาห์ครั้ง</option>
+                            <option value="2 สัปดาห์ครั้ง">2 สัปดาห์ครั้ง (เดือนละสองครั้ง)</option>
                             <option value="เดือนละครั้ง">เดือนละครั้ง</option>
+                            <option value="เดือนละสองครั้ง">เดือนละสองครั้ง</option>
+                            <option value="เดือนละสามครั้ง">เดือนละสามครั้ง</option>
+                            <option value="เดือนละสี่ครั้ง">เดือนละสี่ครั้ง</option>
+                            <option value="เดือนละห้าครั้ง">เดือนละห้าครั้ง</option>
+                            <option value="เดือนละหกครั้ง">เดือนละหกครั้ง</option>
                             <option value="ตามนัด">ตามนัด</option>
                         </select>
-                        <div class="hint">ใช้กำหนดความถี่ของ CG เท่านั้น ตั้งเองอิสระตามความจำเป็นรายบุคคล ไม่ผูกกับระดับ ADL</div>
+                        <div class="hint">ใช้กำหนดความถี่ของ CG เท่านั้น ตั้งเองอิสระตามความจำเป็นรายบุคคล ไม่ผูกกับระดับ ADL — เลือกให้ตรงกับตัวเลือกในลิสต์เท่านั้น ระบบจะไม่สร้างตารางอัตโนมัติถ้าพิมพ์ค่าที่ไม่อยู่ในนี้</div>
                     </div>
                     <div class="form-group">
                         <label>โรคประจำตัว</label>
@@ -1111,6 +1116,14 @@
         const json = await apiGet('generateSchedule', { month, year });
         if (json.success) {
             showToast(`สร้างนัดหมายใหม่ ${json.created} รายการ`, 'success');
+            if (json.skippedCount > 0) {
+                alert(
+                    `⚠️ พบ ${json.skippedCount} คู่ที่ข้ามไป เพราะระบบไม่รู้จักค่าความถี่ที่ตั้งไว้:\n\n` +
+                    json.skippedSamples.join('\n') +
+                    (json.skippedCount > json.skippedSamples.length ? `\n...และอีก ${json.skippedCount - json.skippedSamples.length} รายการ` : '') +
+                    `\n\nกรุณาแก้ไขค่าความถี่ในแท็บ "ผู้สูงอายุ" ให้ตรงกับตัวเลือกที่มี แล้วลองสร้างใหม่อีกครั้ง`
+                );
+            }
             loadSchedule();
         } else {
             showToast(json.message || 'สร้างตารางไม่สำเร็จ', 'error');
