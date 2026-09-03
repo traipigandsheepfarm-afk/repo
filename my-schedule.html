@@ -85,7 +85,7 @@
         display: grid; grid-template-columns: repeat(7, 1fr);
     }
     .cal-cell {
-        min-height: 68px;
+        min-height: 92px;
         border-right: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
         padding: 0.35rem;
@@ -98,7 +98,20 @@
     .cal-cell.today { background: #fffbeb; }
     .cal-cell.selected { background: var(--primary-light); }
     .cal-cell .day-num { font-size: 0.85rem; font-weight: 600; }
-    .cal-dots { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; }
+    .cal-names { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+    .cal-name-tag {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 1px 5px;
+        border-radius: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    .cal-name-more { font-size: 0.66rem; color: var(--text-secondary); font-weight: 600; padding-left: 2px; }
     .cal-dot { width: 7px; height: 7px; border-radius: 50%; }
     .dot-pending { background: var(--primary); }
     .dot-done { background: var(--success); }
@@ -275,19 +288,26 @@
         for (let d = 1; d <= daysInMonth; d++) {
             const key = dateKey(viewYear, viewMonth, d);
             const dayAppts = scheduleData.filter(a => a.visitDate === key);
-            const dots = dayAppts.map(a => {
-                const cls = a.status === 'เยี่ยมแล้ว' ? 'dot-done' : (a.status === 'ยกเลิก' ? 'dot-cancel' : 'dot-pending');
-                return `<span class="cal-dot ${cls}"></span>`;
-            }).join('');
 
             let cellClass = 'cal-cell';
             if (key === todayKey) cellClass += ' today';
             if (key === selectedDateStr) cellClass += ' selected';
 
+            // แสดงเฉพาะนัดที่ "ยังไม่เยี่ยม" (สถานะ นัดหมาย) เป็นชื่อในช่องปฏิทิน
+            // เยี่ยมเสร็จแล้ว/ยกเลิกแล้ว จะไม่แสดงในช่องนี้ (แต่ยังดูได้เมื่อคลิกเข้าไปดูรายละเอียดของวันนั้น)
+            const pendingAppts = dayAppts.filter(a => a.status === 'นัดหมาย');
+            const maxShow = 2;
+            const namesToShow = pendingAppts.slice(0, maxShow).map(a => {
+                const firstName = (a.elderlyName || '').split(' ')[0]; // ตัดนามสกุลออก เหลือคำนำหน้า+ชื่อจริง
+                return `<span class="cal-name-tag" title="${esc(a.elderlyName)}">${esc(firstName)}</span>`;
+            }).join('');
+            const moreCount = pendingAppts.length - maxShow;
+            const moreHtml = moreCount > 0 ? `<span class="cal-name-more">+${moreCount} อื่นๆ</span>` : '';
+
             html += `
                 <div class="${cellClass}" onclick="selectDay('${key}')">
                     <div class="day-num">${d}</div>
-                    <div class="cal-dots">${dots}</div>
+                    <div class="cal-names">${namesToShow}${moreHtml}</div>
                 </div>`;
         }
 
