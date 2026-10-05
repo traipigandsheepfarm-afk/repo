@@ -706,6 +706,12 @@
             list.map(r => `<option value="${r['รหัส']}">${esc(r['ชื่อ-สกุล'])}</option>`).join('');
         document.getElementById('a_elderly').innerHTML = options;
         document.getElementById('f_elderly').innerHTML = options;
+
+        // ฟอร์มเพิ่มนัดหมายด้วยตนเอง: ไม่แสดงผู้ที่เสียชีวิตหรือยุติการดูแลแล้ว (ไม่ควรนัดเยี่ยมเพิ่ม)
+        const scheduleOptions = '<option value="">-- เลือกผู้สูงอายุ --</option>' +
+            list.filter(r => r['สถานะ'] !== 'เสียชีวิต' && r['สถานะ'] !== 'ยุติการดูแล')
+                .map(r => `<option value="${r['รหัส']}">${esc(r['ชื่อ-สกุล'])}</option>`).join('');
+        document.getElementById('s_elderly').innerHTML = scheduleOptions;
     }
 
     document.getElementById('elderlyForm').addEventListener('submit', async function (e) {
